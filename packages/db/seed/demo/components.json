@@ -1,0 +1,834 @@
+[
+  {
+    "canonicalName": "AMD Ryzen 5 5600GT",
+    "type": "cpu",
+    "brand": "AMD",
+    "model": "Ryzen 5 5600GT",
+    "specs": {
+      "socket": "AM4",
+      "cores": 6,
+      "threads": 12,
+      "tdpW": 65,
+      "hasIgpu": true,
+      "includesCooler": true,
+      "memoryTypes": [
+        "DDR4"
+      ],
+      "perfScore": 44
+    }
+  },
+  {
+    "canonicalName": "AMD Ryzen 7 5700G",
+    "type": "cpu",
+    "brand": "AMD",
+    "model": "Ryzen 7 5700G",
+    "specs": {
+      "socket": "AM4",
+      "cores": 8,
+      "threads": 16,
+      "tdpW": 65,
+      "hasIgpu": true,
+      "includesCooler": true,
+      "memoryTypes": [
+        "DDR4"
+      ],
+      "perfScore": 50
+    }
+  },
+  {
+    "canonicalName": "AMD Ryzen 5 5600",
+    "type": "cpu",
+    "brand": "AMD",
+    "model": "Ryzen 5 5600",
+    "specs": {
+      "socket": "AM4",
+      "cores": 6,
+      "threads": 12,
+      "tdpW": 65,
+      "hasIgpu": false,
+      "includesCooler": true,
+      "memoryTypes": [
+        "DDR4"
+      ],
+      "perfScore": 47
+    }
+  },
+  {
+    "canonicalName": "AMD Ryzen 7 5700X",
+    "type": "cpu",
+    "brand": "AMD",
+    "model": "Ryzen 7 5700X",
+    "specs": {
+      "socket": "AM4",
+      "cores": 8,
+      "threads": 16,
+      "tdpW": 65,
+      "hasIgpu": false,
+      "includesCooler": false,
+      "memoryTypes": [
+        "DDR4"
+      ],
+      "perfScore": 54
+    }
+  },
+  {
+    "canonicalName": "AMD Ryzen 5 8500G",
+    "type": "cpu",
+    "brand": "AMD",
+    "model": "Ryzen 5 8500G",
+    "specs": {
+      "socket": "AM5",
+      "cores": 6,
+      "threads": 12,
+      "tdpW": 65,
+      "hasIgpu": true,
+      "includesCooler": true,
+      "memoryTypes": [
+        "DDR5"
+      ],
+      "perfScore": 48
+    }
+  },
+  {
+    "canonicalName": "AMD Ryzen 5 8600G",
+    "type": "cpu",
+    "brand": "AMD",
+    "model": "Ryzen 5 8600G",
+    "specs": {
+      "socket": "AM5",
+      "cores": 6,
+      "threads": 12,
+      "tdpW": 65,
+      "hasIgpu": true,
+      "includesCooler": true,
+      "memoryTypes": [
+        "DDR5"
+      ],
+      "perfScore": 56
+    }
+  },
+  {
+    "canonicalName": "AMD Ryzen 5 7600",
+    "type": "cpu",
+    "brand": "AMD",
+    "model": "Ryzen 5 7600",
+    "specs": {
+      "socket": "AM5",
+      "cores": 6,
+      "threads": 12,
+      "tdpW": 65,
+      "hasIgpu": true,
+      "includesCooler": true,
+      "memoryTypes": [
+        "DDR5"
+      ],
+      "perfScore": 62
+    }
+  },
+  {
+    "canonicalName": "Intel Core i3-12100F",
+    "type": "cpu",
+    "brand": "Intel",
+    "model": "Core i3-12100F",
+    "specs": {
+      "socket": "LGA1700",
+      "cores": 4,
+      "threads": 8,
+      "tdpW": 58,
+      "hasIgpu": false,
+      "includesCooler": true,
+      "memoryTypes": [
+        "DDR4",
+        "DDR5"
+      ],
+      "perfScore": 38
+    }
+  },
+  {
+    "canonicalName": "Intel Core i5-12400F",
+    "type": "cpu",
+    "brand": "Intel",
+    "model": "Core i5-12400F",
+    "specs": {
+      "socket": "LGA1700",
+      "cores": 6,
+      "threads": 12,
+      "tdpW": 65,
+      "hasIgpu": false,
+      "includesCooler": true,
+      "memoryTypes": [
+        "DDR4",
+        "DDR5"
+      ],
+      "perfScore": 53
+    }
+  },
+  {
+    "canonicalName": "Intel Core i5-12400",
+    "type": "cpu",
+    "brand": "Intel",
+    "model": "Core i5-12400",
+    "specs": {
+      "socket": "LGA1700",
+      "cores": 6,
+      "threads": 12,
+      "tdpW": 65,
+      "hasIgpu": true,
+      "includesCooler": true,
+      "memoryTypes": [
+        "DDR4",
+        "DDR5"
+      ],
+      "perfScore": 53
+    }
+  },
+  {
+    "canonicalName": "Intel Core i5-14600KF",
+    "type": "cpu",
+    "brand": "Intel",
+    "model": "Core i5-14600KF",
+    "specs": {
+      "socket": "LGA1700",
+      "cores": 14,
+      "threads": 20,
+      "tdpW": 125,
+      "hasIgpu": false,
+      "includesCooler": false,
+      "memoryTypes": [
+        "DDR4",
+        "DDR5"
+      ],
+      "perfScore": 78
+    }
+  },
+  {
+    "canonicalName": "Gigabyte A520M K V2",
+    "type": "motherboard",
+    "brand": "Gigabyte",
+    "model": "A520M K V2",
+    "specs": {
+      "socket": "AM4",
+      "chipset": "A520",
+      "formFactor": "mATX",
+      "memoryType": "DDR4",
+      "memorySlots": 2,
+      "m2Slots": 1,
+      "sataPorts": 4,
+      "biosNote": "Con Ryzen 5000G o 5600GT puede requerir actualizar el BIOS"
+    }
+  },
+  {
+    "canonicalName": "ASUS Prime A520M-K",
+    "type": "motherboard",
+    "brand": "ASUS",
+    "model": "Prime A520M-K",
+    "specs": {
+      "socket": "AM4",
+      "chipset": "A520",
+      "formFactor": "mATX",
+      "memoryType": "DDR4",
+      "memorySlots": 2,
+      "m2Slots": 1,
+      "sataPorts": 4,
+      "biosNote": "Con Ryzen 5000G o 5600GT puede requerir actualizar el BIOS"
+    }
+  },
+  {
+    "canonicalName": "MSI B550M PRO-VDH WIFI",
+    "type": "motherboard",
+    "brand": "MSI",
+    "model": "B550M PRO-VDH WIFI",
+    "specs": {
+      "socket": "AM4",
+      "chipset": "B550",
+      "formFactor": "mATX",
+      "memoryType": "DDR4",
+      "memorySlots": 4,
+      "m2Slots": 2,
+      "sataPorts": 4,
+      "biosNote": null
+    }
+  },
+  {
+    "canonicalName": "Gigabyte A620M S2H",
+    "type": "motherboard",
+    "brand": "Gigabyte",
+    "model": "A620M S2H",
+    "specs": {
+      "socket": "AM5",
+      "chipset": "A620",
+      "formFactor": "mATX",
+      "memoryType": "DDR5",
+      "memorySlots": 2,
+      "m2Slots": 1,
+      "sataPorts": 4,
+      "biosNote": null
+    }
+  },
+  {
+    "canonicalName": "MSI B650M GAMING PLUS WIFI",
+    "type": "motherboard",
+    "brand": "MSI",
+    "model": "B650M GAMING PLUS WIFI",
+    "specs": {
+      "socket": "AM5",
+      "chipset": "B650",
+      "formFactor": "mATX",
+      "memoryType": "DDR5",
+      "memorySlots": 4,
+      "m2Slots": 2,
+      "sataPorts": 4,
+      "biosNote": null
+    }
+  },
+  {
+    "canonicalName": "ASUS Prime B650-PLUS",
+    "type": "motherboard",
+    "brand": "ASUS",
+    "model": "Prime B650-PLUS",
+    "specs": {
+      "socket": "AM5",
+      "chipset": "B650",
+      "formFactor": "ATX",
+      "memoryType": "DDR5",
+      "memorySlots": 4,
+      "m2Slots": 2,
+      "sataPorts": 4,
+      "biosNote": null
+    }
+  },
+  {
+    "canonicalName": "MSI PRO H610M-G DDR4",
+    "type": "motherboard",
+    "brand": "MSI",
+    "model": "PRO H610M-G DDR4",
+    "specs": {
+      "socket": "LGA1700",
+      "chipset": "H610",
+      "formFactor": "mATX",
+      "memoryType": "DDR4",
+      "memorySlots": 2,
+      "m2Slots": 1,
+      "sataPorts": 4,
+      "biosNote": "Con Intel 14ª generación puede requerir actualizar el BIOS"
+    }
+  },
+  {
+    "canonicalName": "Gigabyte B760M DS3H DDR4",
+    "type": "motherboard",
+    "brand": "Gigabyte",
+    "model": "B760M DS3H DDR4",
+    "specs": {
+      "socket": "LGA1700",
+      "chipset": "B760",
+      "formFactor": "mATX",
+      "memoryType": "DDR4",
+      "memorySlots": 4,
+      "m2Slots": 2,
+      "sataPorts": 4,
+      "biosNote": null
+    }
+  },
+  {
+    "canonicalName": "MSI PRO B760M-A WIFI",
+    "type": "motherboard",
+    "brand": "MSI",
+    "model": "PRO B760M-A WIFI",
+    "specs": {
+      "socket": "LGA1700",
+      "chipset": "B760",
+      "formFactor": "mATX",
+      "memoryType": "DDR5",
+      "memorySlots": 4,
+      "m2Slots": 2,
+      "sataPorts": 4,
+      "biosNote": null
+    }
+  },
+  {
+    "canonicalName": "Kingston Fury Beast DDR4 8GB 3200",
+    "type": "ram",
+    "brand": "Kingston",
+    "model": "Fury Beast KF432C16BB/8",
+    "specs": {
+      "memoryType": "DDR4",
+      "totalGb": 8,
+      "modules": 1,
+      "speedMhz": 3200
+    }
+  },
+  {
+    "canonicalName": "Kingston Fury Beast DDR4 16GB 3200",
+    "type": "ram",
+    "brand": "Kingston",
+    "model": "Fury Beast KF432C16BB/16",
+    "specs": {
+      "memoryType": "DDR4",
+      "totalGb": 16,
+      "modules": 1,
+      "speedMhz": 3200
+    }
+  },
+  {
+    "canonicalName": "Kingston Fury Beast DDR4 16GB (2x8) 3200",
+    "type": "ram",
+    "brand": "Kingston",
+    "model": "Fury Beast KF432C16BBK2/16",
+    "specs": {
+      "memoryType": "DDR4",
+      "totalGb": 16,
+      "modules": 2,
+      "speedMhz": 3200
+    }
+  },
+  {
+    "canonicalName": "Corsair Vengeance LPX DDR4 32GB (2x16) 3200",
+    "type": "ram",
+    "brand": "Corsair",
+    "model": "Vengeance LPX CMK32GX4M2E3200C16",
+    "specs": {
+      "memoryType": "DDR4",
+      "totalGb": 32,
+      "modules": 2,
+      "speedMhz": 3200
+    }
+  },
+  {
+    "canonicalName": "Kingston ValueRAM DDR5 8GB 4800",
+    "type": "ram",
+    "brand": "Kingston",
+    "model": "ValueRAM KVR48U40BS6-8",
+    "specs": {
+      "memoryType": "DDR5",
+      "totalGb": 8,
+      "modules": 1,
+      "speedMhz": 4800
+    }
+  },
+  {
+    "canonicalName": "Kingston Fury Beast DDR5 16GB 5600",
+    "type": "ram",
+    "brand": "Kingston",
+    "model": "Fury Beast KF556C40BB-16",
+    "specs": {
+      "memoryType": "DDR5",
+      "totalGb": 16,
+      "modules": 1,
+      "speedMhz": 5600
+    }
+  },
+  {
+    "canonicalName": "XPG Lancer DDR5 16GB 6000",
+    "type": "ram",
+    "brand": "ADATA",
+    "model": "XPG Lancer AX5U6000C3016G",
+    "specs": {
+      "memoryType": "DDR5",
+      "totalGb": 16,
+      "modules": 1,
+      "speedMhz": 6000
+    }
+  },
+  {
+    "canonicalName": "Kingston Fury Beast DDR5 32GB (2x16) 6000",
+    "type": "ram",
+    "brand": "Kingston",
+    "model": "Fury Beast KF560C30BBEK2-32",
+    "specs": {
+      "memoryType": "DDR5",
+      "totalGb": 32,
+      "modules": 2,
+      "speedMhz": 6000
+    }
+  },
+  {
+    "canonicalName": "Zotac GeForce RTX 3050 6GB Twin Edge OC",
+    "type": "gpu",
+    "brand": "Zotac",
+    "model": "RTX 3050 6GB Twin Edge OC",
+    "specs": {
+      "chipset": "GeForce RTX 3050 6GB",
+      "vramGb": 6,
+      "lengthMm": 163,
+      "tbpW": 70,
+      "recommendedPsuW": 300,
+      "perfScore": 28
+    }
+  },
+  {
+    "canonicalName": "Gigabyte GeForce RTX 5050 Windforce OC 8G",
+    "type": "gpu",
+    "brand": "Gigabyte",
+    "model": "RTX 5050 Windforce OC 8G",
+    "specs": {
+      "chipset": "GeForce RTX 5050",
+      "vramGb": 8,
+      "lengthMm": 199,
+      "tbpW": 130,
+      "recommendedPsuW": 550,
+      "perfScore": 42
+    }
+  },
+  {
+    "canonicalName": "Gigabyte GeForce RTX 5060 Windforce OC 8G",
+    "type": "gpu",
+    "brand": "Gigabyte",
+    "model": "RTX 5060 Windforce OC 8G",
+    "specs": {
+      "chipset": "GeForce RTX 5060",
+      "vramGb": 8,
+      "lengthMm": 199,
+      "tbpW": 145,
+      "recommendedPsuW": 550,
+      "perfScore": 50
+    }
+  },
+  {
+    "canonicalName": "ASUS Dual GeForce RTX 5060 Ti 16G",
+    "type": "gpu",
+    "brand": "ASUS",
+    "model": "Dual RTX 5060 Ti 16G",
+    "specs": {
+      "chipset": "GeForce RTX 5060 Ti 16GB",
+      "vramGb": 16,
+      "lengthMm": 230,
+      "tbpW": 180,
+      "recommendedPsuW": 650,
+      "perfScore": 60
+    }
+  },
+  {
+    "canonicalName": "Gigabyte GeForce RTX 5070 Windforce OC SFF 12G",
+    "type": "gpu",
+    "brand": "Gigabyte",
+    "model": "RTX 5070 Windforce OC SFF 12G",
+    "specs": {
+      "chipset": "GeForce RTX 5070",
+      "vramGb": 12,
+      "lengthMm": 261,
+      "tbpW": 250,
+      "recommendedPsuW": 650,
+      "perfScore": 74
+    }
+  },
+  {
+    "canonicalName": "Sapphire Pulse Radeon RX 7600 8G",
+    "type": "gpu",
+    "brand": "Sapphire",
+    "model": "Pulse RX 7600 8G",
+    "specs": {
+      "chipset": "Radeon RX 7600",
+      "vramGb": 8,
+      "lengthMm": 240,
+      "tbpW": 165,
+      "recommendedPsuW": 550,
+      "perfScore": 45
+    }
+  },
+  {
+    "canonicalName": "Gigabyte Radeon RX 9060 XT Gaming OC 16G",
+    "type": "gpu",
+    "brand": "Gigabyte",
+    "model": "RX 9060 XT Gaming OC 16G",
+    "specs": {
+      "chipset": "Radeon RX 9060 XT 16GB",
+      "vramGb": 16,
+      "lengthMm": 281,
+      "tbpW": 190,
+      "recommendedPsuW": 600,
+      "perfScore": 58
+    }
+  },
+  {
+    "canonicalName": "Sapphire Pulse Radeon RX 9070 XT 16G",
+    "type": "gpu",
+    "brand": "Sapphire",
+    "model": "Pulse RX 9070 XT 16G",
+    "specs": {
+      "chipset": "Radeon RX 9070 XT",
+      "vramGb": 16,
+      "lengthMm": 313,
+      "tbpW": 304,
+      "recommendedPsuW": 750,
+      "perfScore": 84
+    }
+  },
+  {
+    "canonicalName": "Kingston A400 480GB SATA",
+    "type": "storage",
+    "brand": "Kingston",
+    "model": "A400 480GB",
+    "specs": {
+      "interface": "sata",
+      "formFactor": "2.5",
+      "capacityGb": 480
+    }
+  },
+  {
+    "canonicalName": "Kingston NV3 500GB NVMe",
+    "type": "storage",
+    "brand": "Kingston",
+    "model": "NV3 500GB",
+    "specs": {
+      "interface": "nvme",
+      "formFactor": "M.2-2280",
+      "capacityGb": 500
+    }
+  },
+  {
+    "canonicalName": "Kingston NV3 1TB NVMe",
+    "type": "storage",
+    "brand": "Kingston",
+    "model": "NV3 1TB",
+    "specs": {
+      "interface": "nvme",
+      "formFactor": "M.2-2280",
+      "capacityGb": 1000
+    }
+  },
+  {
+    "canonicalName": "WD Blue SN580 1TB NVMe",
+    "type": "storage",
+    "brand": "Western Digital",
+    "model": "WD Blue SN580 1TB",
+    "specs": {
+      "interface": "nvme",
+      "formFactor": "M.2-2280",
+      "capacityGb": 1000
+    }
+  },
+  {
+    "canonicalName": "WD Black SN850X 1TB NVMe",
+    "type": "storage",
+    "brand": "Western Digital",
+    "model": "WD Black SN850X 1TB (con disipador)",
+    "specs": {
+      "interface": "nvme",
+      "formFactor": "M.2-2280",
+      "capacityGb": 1000
+    }
+  },
+  {
+    "canonicalName": "XPG Spectrix S40G 256GB NVMe",
+    "type": "storage",
+    "brand": "ADATA",
+    "model": "XPG Spectrix S40G 256GB",
+    "specs": {
+      "interface": "nvme",
+      "formFactor": "M.2-2280",
+      "capacityGb": 256
+    }
+  },
+  {
+    "canonicalName": "XPG Spectrix S40G 1TB NVMe",
+    "type": "storage",
+    "brand": "ADATA",
+    "model": "XPG Spectrix S40G 1TB",
+    "specs": {
+      "interface": "nvme",
+      "formFactor": "M.2-2280",
+      "capacityGb": 1000
+    }
+  },
+  {
+    "canonicalName": "Noga ATX 600W",
+    "type": "psu",
+    "brand": "Noga",
+    "model": "ATX 600W",
+    "specs": {
+      "wattage": 600,
+      "efficiency": "Sin certificación",
+      "formFactor": "ATX"
+    }
+  },
+  {
+    "canonicalName": "Noga ATX 700W",
+    "type": "psu",
+    "brand": "Noga",
+    "model": "ATX 700W",
+    "specs": {
+      "wattage": 700,
+      "efficiency": "Sin certificación",
+      "formFactor": "ATX"
+    }
+  },
+  {
+    "canonicalName": "GameMax GP-550 550W 80 Plus Bronze",
+    "type": "psu",
+    "brand": "GameMax",
+    "model": "GP-550",
+    "specs": {
+      "wattage": 550,
+      "efficiency": "80 Plus Bronze",
+      "formFactor": "ATX"
+    }
+  },
+  {
+    "canonicalName": "Cooler Master MWE 550 Bronze V3",
+    "type": "psu",
+    "brand": "Cooler Master",
+    "model": "MWE 550 Bronze V3",
+    "specs": {
+      "wattage": 550,
+      "efficiency": "80 Plus Bronze",
+      "formFactor": "ATX"
+    }
+  },
+  {
+    "canonicalName": "Thermaltake Smart BX1 650W",
+    "type": "psu",
+    "brand": "Thermaltake",
+    "model": "Smart BX1 650W",
+    "specs": {
+      "wattage": 650,
+      "efficiency": "80 Plus Bronze",
+      "formFactor": "ATX"
+    }
+  },
+  {
+    "canonicalName": "GameMax VP-800 800W 80 Plus Bronze",
+    "type": "psu",
+    "brand": "GameMax",
+    "model": "VP-800",
+    "specs": {
+      "wattage": 800,
+      "efficiency": "80 Plus Bronze",
+      "formFactor": "ATX"
+    }
+  },
+  {
+    "canonicalName": "Corsair RM750e 750W",
+    "type": "psu",
+    "brand": "Corsair",
+    "model": "RM750e",
+    "specs": {
+      "wattage": 750,
+      "efficiency": "80 Plus Gold",
+      "formFactor": "ATX"
+    }
+  },
+  {
+    "canonicalName": "Cooler Master MWE Gold 850 V3",
+    "type": "psu",
+    "brand": "Cooler Master",
+    "model": "MWE Gold 850 V3",
+    "specs": {
+      "wattage": 850,
+      "efficiency": "80 Plus Gold",
+      "formFactor": "ATX"
+    }
+  },
+  {
+    "canonicalName": "Thermaltake View 270 TG ARGB",
+    "type": "case",
+    "brand": "Thermaltake",
+    "model": "View 270 TG ARGB",
+    "specs": {
+      "supportedFormFactors": [
+        "ATX",
+        "mATX",
+        "ITX"
+      ],
+      "maxGpuLengthMm": 400,
+      "psuFormFactor": "ATX",
+      "includedPsu": null
+    }
+  },
+  {
+    "canonicalName": "Thermaltake AH T200",
+    "type": "case",
+    "brand": "Thermaltake",
+    "model": "AH T200 Micro",
+    "specs": {
+      "supportedFormFactors": [
+        "mATX",
+        "ITX"
+      ],
+      "maxGpuLengthMm": 330,
+      "psuFormFactor": "ATX",
+      "includedPsu": null
+    }
+  },
+  {
+    "canonicalName": "Redragon Wheeljack",
+    "type": "case",
+    "brand": "Redragon",
+    "model": "Wheeljack GC-606",
+    "specs": {
+      "supportedFormFactors": [
+        "ATX",
+        "mATX",
+        "ITX"
+      ],
+      "maxGpuLengthMm": 320,
+      "psuFormFactor": "ATX",
+      "includedPsu": null
+    }
+  },
+  {
+    "canonicalName": "Cooler Master MasterBox Q300L",
+    "type": "case",
+    "brand": "Cooler Master",
+    "model": "MasterBox Q300L",
+    "specs": {
+      "supportedFormFactors": [
+        "mATX",
+        "ITX"
+      ],
+      "maxGpuLengthMm": 360,
+      "psuFormFactor": "ATX",
+      "includedPsu": null
+    }
+  },
+  {
+    "canonicalName": "Lian Li Lancool 216",
+    "type": "case",
+    "brand": "Lian Li",
+    "model": "Lancool 216",
+    "specs": {
+      "supportedFormFactors": [
+        "ATX",
+        "mATX",
+        "ITX"
+      ],
+      "maxGpuLengthMm": 392,
+      "psuFormFactor": "ATX",
+      "includedPsu": null
+    }
+  },
+  {
+    "canonicalName": "Corsair 4000D Airflow",
+    "type": "case",
+    "brand": "Corsair",
+    "model": "4000D Airflow",
+    "specs": {
+      "supportedFormFactors": [
+        "ATX",
+        "mATX",
+        "ITX"
+      ],
+      "maxGpuLengthMm": 360,
+      "psuFormFactor": "ATX",
+      "includedPsu": null
+    }
+  },
+  {
+    "canonicalName": "Gabinete Kit Micro ATX con fuente 500W",
+    "type": "case",
+    "brand": "Genérico",
+    "model": "Kit mATX + fuente 500W",
+    "specs": {
+      "supportedFormFactors": [
+        "mATX",
+        "ITX"
+      ],
+      "maxGpuLengthMm": 250,
+      "psuFormFactor": "ATX",
+      "includedPsu": {
+        "wattage": 500,
+        "efficiency": "Sin certificación",
+        "formFactor": "ATX"
+      }
+    }
+  }
+]

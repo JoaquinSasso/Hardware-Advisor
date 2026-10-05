@@ -1,0 +1,12 @@
+Identificador de URL;Nombre;Categorías;Nombre de propiedad 1;Valor de propiedad 1;Nombre de propiedad 2;Valor de propiedad 2;Nombre de propiedad 3;Valor de propiedad 3;Precio;Stock;SKU;Mostrar en tienda;Costo
+prod-simple;Procesador Simple;COMPONENTES;;;;;;;206,540.04;10;SKU-1;SI;1000
+prod-var;Teclado Variante;COMPONENTES;Color;Rojo;;;;;1,000.00;5;SKU-VAR;SI;500
+prod-var;;;Color;Azul (Ñ);;;;;1,100.00;3;SKU-VAR;SI;500
+prod-rep1;Repetido 1;COMPONENTES;;;;;;;500.00;1;SKU-SAME;SI;200
+prod-rep2;Repetido 2;COMPONENTES;;;;;;;600.00;2;SKU-SAME;SI;300
+prod-acc;Cable USB;ACCESORIOS > Cables;;;;;;;150.00;20;SKU-ACC;SI;50
+prod-inv;Precio Invalido;COMPONENTES;;;;;;;1.116.693,14;1;SKU-INV;SI;500
+prod-mb-a;Motherboard A;COMPONENTES;;;;;;;15,000.00;10;MB-A;SI;0
+prod-mb-b;Motherboard B;COMPONENTES;;;;;;;16,000.00;10;MB-B;SI;0
+prod-case-b;Case B;COMPONENTES;;;;;;;8,000.00;10;CASE-B;SI;0
+prod-case-a;Case A;COMPONENTES;;;;;;;9,000.00;10;CASE-A;SI;0
