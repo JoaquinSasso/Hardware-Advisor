@@ -260,5 +260,31 @@ describe('Database Tests', () => {
       await fs.rm(tempDir, { recursive: true, force: true });
     }
   });
-});
+  it('13. getCatalog preserva nulos (biosNote, includedPsu) y convierte explicitamente', async () => {
+    await importCsv(db, { tnStoreId: 1, storeName: 'S', filePath: path.join(__dirname, 'fixtures/sample.csv') });
+    await seedComponents(db, path.join(__dirname, 'fixtures/components.json'));
+    await applyMappings(db, 1, path.join(__dirname, 'fixtures/mappings.json'));
 
+    const catalog = await getCatalog(db, 1);
+    
+    // There are 2 motherboards and 2 cases (A and B).
+    const mbs = catalog.filter(c => c.type === 'motherboard');
+    expect(mbs.length).toBe(2);
+    
+    const mbA = mbs.find(c => c.name === 'Motherboard A') as any;
+    expect(mbA.specs.biosNote).toBeNull();
+    
+    const mbB = mbs.find(c => c.name === 'Motherboard B') as any;
+    expect(mbB.specs.biosNote).toBe('Requires update for Ryzen 5000');
+
+    const cases = catalog.filter(c => c.type === 'case');
+    expect(cases.length).toBe(2);
+    
+    const caseA = cases.find(c => c.name === 'Case A') as any; // Mapped to Gabinete Generico
+    expect(caseA.specs.includedPsu).not.toBeNull();
+    expect(caseA.specs.includedPsu.wattage).toBe(500);
+
+    const caseB = cases.find(c => c.name === 'Case B') as any;
+    expect(caseB.specs.includedPsu).toBeNull();
+  });
+});
