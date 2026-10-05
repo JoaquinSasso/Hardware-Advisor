@@ -36,17 +36,8 @@ export async function migrate(db: DbClient, opts?: MigrateOptions): Promise<void
 
     const rows = getRows(result);
     if (rows.length === 0) {
-      await db.execRaw('BEGIN');
-      try {
-        await db.execRaw(content);
-        const escapedFileName = file.replace(/'/g, "''");
-        await db.execRaw(`INSERT INTO schema_migrations (name) VALUES ('${escapedFileName}');`);
-        await db.execRaw('COMMIT');
-        log(`Applied migration: ${file}`);
-      } catch (err) {
-        await db.execRaw('ROLLBACK');
-        throw err;
-      }
+      await db.applyMigration(file, content);
+      log(`Applied migration: ${file}`);
     }
   }
 }
