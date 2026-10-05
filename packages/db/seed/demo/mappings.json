@@ -1,0 +1,464 @@
+[
+  {
+    "tnHandle": "procesador-amd-ryzen-5-5600gt-am4-65w-3-6ghz-6-core-7d7eb",
+    "variantLabel": null,
+    "canonicalName": "AMD Ryzen 5 5600GT",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "procesador-amd-ryzen-7-5700g-854b3",
+    "variantLabel": null,
+    "canonicalName": "AMD Ryzen 7 5700G",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "procesador-amd-r5-5600-am4-c-cooler-b039c",
+    "variantLabel": null,
+    "canonicalName": "AMD Ryzen 5 5600",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "micro-amd-ryzen-7-5700x-sin-cooler-am4-7240c",
+    "variantLabel": null,
+    "canonicalName": "AMD Ryzen 7 5700X",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "procesador-amd-ryzen-5-8500g-am5-65w-3-5-ghz-6-core-8dcf2",
+    "variantLabel": null,
+    "canonicalName": "AMD Ryzen 5 8500G",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "procesador-amd-ryzen-5-8600g-am5-radeon-760m-169d6",
+    "variantLabel": null,
+    "canonicalName": "AMD Ryzen 5 8600G",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "procesador-amd-ryzen-5-7600-am5-box-48710",
+    "variantLabel": null,
+    "canonicalName": "AMD Ryzen 5 7600",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "micro-intel-core-i3-12100f-4-3ghz-lga1700-2bd39",
+    "variantLabel": null,
+    "canonicalName": "Intel Core i3-12100F",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "procesador-intel-core-i5-12400f-6-nucleos-lga-1700-afa9b",
+    "variantLabel": null,
+    "canonicalName": "Intel Core i5-12400F",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "procesador-intel-core-i5-12400-c-video-uhd-730-b72fd",
+    "variantLabel": null,
+    "canonicalName": "Intel Core i5-12400",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "micro-intel-i5-14600kf-s-cooler-s1700-7f4bd",
+    "variantLabel": null,
+    "canonicalName": "Intel Core i5-14600KF",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "mother-gigabyte-a520mkv2-43845",
+    "variantLabel": null,
+    "canonicalName": "Gigabyte A520M K V2",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "mother-asus-prime-a520m-k-am4-e4aea",
+    "variantLabel": null,
+    "canonicalName": "ASUS Prime A520M-K",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "mother-msi-b550m-pro-vdh-wifi-am4-a03cf",
+    "variantLabel": null,
+    "canonicalName": "MSI B550M PRO-VDH WIFI",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "mother-gigabyte-a620m-s2h-am5-ddr5-c5264",
+    "variantLabel": null,
+    "canonicalName": "Gigabyte A620M S2H",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "mother-msi-b650m-gaming-plus-wifi-am5-92811",
+    "variantLabel": null,
+    "canonicalName": "MSI B650M GAMING PLUS WIFI",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "mother-asus-prime-b650-plus-atx-am5-509a5",
+    "variantLabel": null,
+    "canonicalName": "ASUS Prime B650-PLUS",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "mother-msi-h610m-g-ddr4-lga1700-445ca",
+    "variantLabel": null,
+    "canonicalName": "MSI PRO H610M-G DDR4",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "mother-gigabyte-b760m-ds3h-ddr4-lga1700-3dcf5",
+    "variantLabel": null,
+    "canonicalName": "Gigabyte B760M DS3H DDR4",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "mother-msi-pro-b760m-a-wifi-ddr5-3126f",
+    "variantLabel": null,
+    "canonicalName": "MSI PRO B760M-A WIFI",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "memoria-kingston-ddr4-8gb-3200mhz-cl16-fury-beast-black-18da8",
+    "variantLabel": null,
+    "canonicalName": "Kingston Fury Beast DDR4 8GB 3200",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "memoria-ram-kingston-fury-beast-16gb-ddr4-3200-47d6c",
+    "variantLabel": null,
+    "canonicalName": "Kingston Fury Beast DDR4 16GB 3200",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "memoria-kingston-fury-beast-kit-2x8gb-ddr4-3200-19346",
+    "variantLabel": null,
+    "canonicalName": "Kingston Fury Beast DDR4 16GB (2x8) 3200",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "memoria-corsair-vengeance-lpx-32gb-2x16-ddr4-3200-cdb36",
+    "variantLabel": null,
+    "canonicalName": "Corsair Vengeance LPX DDR4 32GB (2x16) 3200",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "memoria-kingston-valueram-ddr5-8gb-4800-e200f",
+    "variantLabel": null,
+    "canonicalName": "Kingston ValueRAM DDR5 8GB 4800",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "memoria-kingston-fury-beast-ddr5-16gb-5600mhz-2ba02",
+    "variantLabel": null,
+    "canonicalName": "Kingston Fury Beast DDR5 16GB 5600",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "memoria-xpg-lancer-ddr5-16gb-6000-rgb-70451",
+    "variantLabel": null,
+    "canonicalName": "XPG Lancer DDR5 16GB 6000",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "memoria-kingston-fury-beast-ddr5-32gb-2x16-6000mhz-141f0",
+    "variantLabel": null,
+    "canonicalName": "Kingston Fury Beast DDR5 32GB (2x16) 6000",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "placa-de-video-zotac-gaming-geforce-rtx-3050-6gb-gddr6-twin-edge-oc-709e5",
+    "variantLabel": null,
+    "canonicalName": "Zotac GeForce RTX 3050 6GB Twin Edge OC",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "placa-de-video-gigabyte-geforce-rtx-5050-8gb-gddr6-windforce-f0a05",
+    "variantLabel": null,
+    "canonicalName": "Gigabyte GeForce RTX 5050 Windforce OC 8G",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "placa-de-video-gigabyte-rtx-5060-windforce-oc-8gb-77f42",
+    "variantLabel": null,
+    "canonicalName": "Gigabyte GeForce RTX 5060 Windforce OC 8G",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "placa-de-video-asus-dual-rtx-5060-ti-16gb-gddr7-e553f",
+    "variantLabel": null,
+    "canonicalName": "ASUS Dual GeForce RTX 5060 Ti 16G",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "placa-de-video-gigabyte-rtx-5070-windforce-oc-sff-12g-5429d",
+    "variantLabel": null,
+    "canonicalName": "Gigabyte GeForce RTX 5070 Windforce OC SFF 12G",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "video-rx-7600-sapphire-pulse-8gb-93dfd",
+    "variantLabel": null,
+    "canonicalName": "Sapphire Pulse Radeon RX 7600 8G",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "video-rx-9060-xt-gigabyte-gaming-oc-16gb-e0061",
+    "variantLabel": null,
+    "canonicalName": "Gigabyte Radeon RX 9060 XT Gaming OC 16G",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "placa-de-video-sapphire-pulse-rx-9070-xt-16gb-b34f3",
+    "variantLabel": null,
+    "canonicalName": "Sapphire Pulse Radeon RX 9070 XT 16G",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "disco-solido-ssd-kingston-a400-480gb-sata-f1234",
+    "variantLabel": null,
+    "canonicalName": "Kingston A400 480GB SATA",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "ssd-m-2-kingston-nv3-500gb-nvme-5b322",
+    "variantLabel": null,
+    "canonicalName": "Kingston NV3 500GB NVMe",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "ssd-m-2-kingston-nv3-1tb-nvme-pcie-4-0-f21d8",
+    "variantLabel": null,
+    "canonicalName": "Kingston NV3 1TB NVMe",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "disco-ssd-wd-blue-sn580-1tb-m-2-nvme-b30f2",
+    "variantLabel": null,
+    "canonicalName": "WD Blue SN580 1TB NVMe",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "ssd-1tb-m-2-para-ps5-y-pc-wd-black-sn850x-con-disipador-bca78",
+    "variantLabel": null,
+    "canonicalName": "WD Black SN850X 1TB NVMe",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "ssd-m-2-nvme-xpg-spectrix-s40g-256gb-1-tb-d2bb7",
+    "variantLabel": "Capacidad: 256 GB",
+    "canonicalName": "XPG Spectrix S40G 256GB NVMe",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "ssd-m-2-nvme-xpg-spectrix-s40g-256gb-1-tb-d2bb7",
+    "variantLabel": "Capacidad: 1 TB",
+    "canonicalName": "XPG Spectrix S40G 1TB NVMe",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "fuente-atx-noga-600w-box-cooler-cooler-120mm-e6340",
+    "variantLabel": "Potencia: 600w",
+    "canonicalName": "Noga ATX 600W",
+    "status": "confirmed",
+    "advisorEnabled": false
+  },
+  {
+    "tnHandle": "fuente-atx-noga-600w-box-cooler-cooler-120mm-e6340",
+    "variantLabel": "Potencia: 700w",
+    "canonicalName": "Noga ATX 700W",
+    "status": "confirmed",
+    "advisorEnabled": false
+  },
+  {
+    "tnHandle": "fuente-gamemax-gp-550-550w-80-plus-bronze-3e356",
+    "variantLabel": null,
+    "canonicalName": "GameMax GP-550 550W 80 Plus Bronze",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "fuente-cooler-master-mwe-550-bronze-v3-3cff8",
+    "variantLabel": null,
+    "canonicalName": "Cooler Master MWE 550 Bronze V3",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "fuente-thermaltake-smart-bx1-650w-80-plus-bronze-4d442",
+    "variantLabel": null,
+    "canonicalName": "Thermaltake Smart BX1 650W",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "fuente-800w-gamemax-vp-800-80-plus-bronze-cooler-1-120mm-4503b",
+    "variantLabel": null,
+    "canonicalName": "GameMax VP-800 800W 80 Plus Bronze",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "fuente-corsair-rm750e-750w-80-plus-gold-modular-97638",
+    "variantLabel": null,
+    "canonicalName": "Corsair RM750e 750W",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "fuente-modular-cooler-master-mwe-gold-850wv3-06f43",
+    "variantLabel": null,
+    "canonicalName": "Cooler Master MWE Gold 850 V3",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "gabinete-thermaltake-view-270-mid-tg-x2-fan-argb-x3-cbbe8",
+    "variantLabel": "Color: Verde Matcha",
+    "canonicalName": "Thermaltake View 270 TG ARGB",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "gabinete-thermaltake-view-270-mid-tg-x2-fan-argb-x3-cbbe8",
+    "variantLabel": "Color: Lila",
+    "canonicalName": "Thermaltake View 270 TG ARGB",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "gabinete-thermaltake-ah-t200-snow-blanco-mid-tower-a9f7d",
+    "variantLabel": "Color: Blanco",
+    "canonicalName": "Thermaltake AH T200",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "gabinete-thermaltake-ah-t200-snow-blanco-mid-tower-a9f7d",
+    "variantLabel": "Color: Verde",
+    "canonicalName": "Thermaltake AH T200",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "gabinete-gamer-redragon-wheeljack-negro-rgb-e3444",
+    "variantLabel": null,
+    "canonicalName": "Redragon Wheeljack",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "gabinete-cooler-master-masterbox-q300l-micro-atx-cf9d3",
+    "variantLabel": null,
+    "canonicalName": "Cooler Master MasterBox Q300L",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "gabinete-lian-li-lancool-216-negro-58122",
+    "variantLabel": null,
+    "canonicalName": "Lian Li Lancool 216",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "gabinete-corsair-4000d-airflow-tg-negro-4dae2",
+    "variantLabel": null,
+    "canonicalName": "Corsair 4000D Airflow",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "gabinete-kit-micro-atx-c-fuente-500w-teclado-y-mouse-620ae",
+    "variantLabel": null,
+    "canonicalName": "Gabinete Kit Micro ATX con fuente 500W",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "fuente-switching-12v-6a-seisa-camara-21063",
+    "variantLabel": null,
+    "canonicalName": null,
+    "status": "ignored",
+    "advisorEnabled": false
+  },
+  {
+    "tnHandle": "fuente-poe-ubiquiti-48v-gigabit-1-ethernet-a61df",
+    "variantLabel": null,
+    "canonicalName": null,
+    "status": "ignored",
+    "advisorEnabled": false
+  },
+  {
+    "tnHandle": "pasta-termica-arctic-mx-4-4g-82721",
+    "variantLabel": null,
+    "canonicalName": null,
+    "status": "ignored",
+    "advisorEnabled": false
+  },
+  {
+    "tnHandle": "disipador-cooler-master-hyper-212-3dhp-argb-black-5821c",
+    "variantLabel": null,
+    "canonicalName": null,
+    "status": "ignored",
+    "advisorEnabled": false
+  },
+  {
+    "tnHandle": "disipador-cooler-master-hyper-212-spectrum-v3-510bc",
+    "variantLabel": null,
+    "canonicalName": null,
+    "status": "ignored",
+    "advisorEnabled": false
+  },
+  {
+    "tnHandle": "ssd-externo-1tb-kingston-xs1000-usb3-2-gen2-fd928",
+    "variantLabel": null,
+    "canonicalName": null,
+    "status": "ignored",
+    "advisorEnabled": false
+  }
+]

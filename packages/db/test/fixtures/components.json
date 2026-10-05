@@ -1,0 +1,131 @@
+[
+  {
+    "canonicalName": "AMD Ryzen 5 5600X",
+    "type": "cpu",
+    "brand": "AMD",
+    "model": "Ryzen 5 5600X",
+    "specs": {
+      "socket": "AM4",
+      "cores": 6,
+      "threads": 12,
+      "tdpW": 65,
+      "hasIgpu": false,
+      "includesCooler": true,
+      "memoryTypes": [
+        "DDR4"
+      ],
+      "perfScore": 75
+    }
+  },
+  {
+    "canonicalName": "Intel Core i5-12400",
+    "type": "cpu",
+    "brand": "Intel",
+    "model": "Core i5-12400",
+    "specs": {
+      "socket": "LGA1700",
+      "cores": 6,
+      "threads": 12,
+      "tdpW": 65,
+      "hasIgpu": true,
+      "includesCooler": true,
+      "memoryTypes": [
+        "DDR4",
+        "DDR5"
+      ],
+      "perfScore": 70
+    }
+  },
+  {
+    "canonicalName": "NVIDIA RTX 3060",
+    "type": "gpu",
+    "brand": "NVIDIA",
+    "model": "RTX 3060",
+    "specs": {
+      "chipset": "GA106",
+      "vramGb": 12,
+      "lengthMm": 242,
+      "tbpW": 170,
+      "recommendedPsuW": 550,
+      "perfScore": 65
+    }
+  },
+  {
+    "canonicalName": "Corsair Vengeance LPX 16GB",
+    "type": "ram",
+    "brand": "Corsair",
+    "model": "Vengeance LPX",
+    "specs": {
+      "memoryType": "DDR4",
+      "totalGb": 16,
+      "modules": 2,
+      "speedMhz": 3200
+    }
+  },
+  {
+    "canonicalName": "Gabinete Generico",
+    "type": "case",
+    "brand": "Noganet",
+    "model": "Generic",
+    "specs": {
+      "supportedFormFactors": [
+        "ATX",
+        "mATX",
+        "ITX"
+      ],
+      "maxGpuLengthMm": 300,
+      "psuFormFactor": "ATX",
+      "includedPsu": {
+        "wattage": 500,
+        "efficiency": "Generic",
+        "formFactor": "ATX"
+      }
+    }
+  },
+  {
+    "canonicalName": "Motherboard A",
+    "type": "motherboard",
+    "brand": "Asus",
+    "model": "A",
+    "specs": {
+      "socket": "AM4",
+      "chipset": "B550",
+      "formFactor": "ATX",
+      "memoryType": "DDR4",
+      "memorySlots": 4,
+      "m2Slots": 2,
+      "sataPorts": 4,
+      "biosNote": null
+    }
+  },
+  {
+    "canonicalName": "Motherboard B",
+    "type": "motherboard",
+    "brand": "Asus",
+    "model": "B",
+    "specs": {
+      "socket": "AM4",
+      "chipset": "B550",
+      "formFactor": "ATX",
+      "memoryType": "DDR4",
+      "memorySlots": 4,
+      "m2Slots": 2,
+      "sataPorts": 4,
+      "biosNote": "Requires update for Ryzen 5000"
+    }
+  },
+  {
+    "canonicalName": "Case B",
+    "type": "case",
+    "brand": "NZXT",
+    "model": "H510",
+    "specs": {
+      "supportedFormFactors": [
+        "ATX"
+      ],
+      "maxGpuLengthMm": 381,
+      "psuFormFactor": "ATX",
+      "includedPsu": null
+    }
+  }
+]

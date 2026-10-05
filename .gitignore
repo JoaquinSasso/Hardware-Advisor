@@ -3,3 +3,9 @@ dist/
 .DS_Store
 Thumbs.db
 *.log
+
+data/
+*.csv
+!packages/db/test/fixtures/*.csv
+!packages/db/seed/demo/*.csv
+.pglite/

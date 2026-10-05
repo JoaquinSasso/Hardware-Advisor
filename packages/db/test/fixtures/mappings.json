@@ -1,0 +1,51 @@
+[
+  {
+    "tnHandle": "prod-simple",
+    "variantLabel": null,
+    "canonicalName": "AMD Ryzen 5 5600X",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "prod-var",
+    "variantLabel": "Color: Rojo",
+    "canonicalName": "Corsair Vengeance LPX 16GB",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "prod-var",
+    "variantLabel": "Color: Azul (Ñ)",
+    "canonicalName": null,
+    "status": "ignored",
+    "advisorEnabled": false
+  },
+  {
+    "tnHandle": "prod-mb-a",
+    "variantLabel": null,
+    "canonicalName": "Motherboard A",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "prod-mb-b",
+    "variantLabel": null,
+    "canonicalName": "Motherboard B",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "prod-case-b",
+    "variantLabel": null,
+    "canonicalName": "Case B",
+    "status": "confirmed",
+    "advisorEnabled": true
+  },
+  {
+    "tnHandle": "prod-case-a",
+    "variantLabel": null,
+    "canonicalName": "Gabinete Generico",
+    "status": "confirmed",
+    "advisorEnabled": true
+  }
+]
