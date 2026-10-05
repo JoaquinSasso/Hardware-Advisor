@@ -28,16 +28,34 @@ export type PsuFormFactor = z.infer<typeof PsuFormFactorSchema>;
 // Component Specs
 // ============================================================================
 
-export const CpuSpecsSchema = z.object({
-  socket: z.string().min(1),
-  cores: z.number().int().positive(),
-  threads: z.number().int().positive(),
-  tdpW: z.number().int().positive(),
-  hasIgpu: z.boolean(),
-  includesCooler: z.boolean(),
-  memoryTypes: z.array(MemoryTypeSchema).min(1),
-  perfScore: z.number().int().min(1).max(100),
-});
+export const CpuSpecsSchema = z
+  .object({
+    socket: z.string().min(1),
+    cores: z.number().int().positive(),
+    threads: z.number().int().positive(),
+    tdpW: z.number().int().positive(),
+    hasIgpu: z.boolean(),
+    igpuScore: z.number().int().min(0).max(100),
+    includesCooler: z.boolean(),
+    memoryTypes: z.array(MemoryTypeSchema).min(1),
+    perfScore: z.number().int().min(1).max(100),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.hasIgpu && data.igpuScore !== 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'igpuScore must be 0 when hasIgpu is false',
+        path: ['igpuScore'],
+      });
+    }
+    if (data.hasIgpu && data.igpuScore < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'igpuScore must be >= 1 when hasIgpu is true',
+        path: ['igpuScore'],
+      });
+    }
+  });
 export type CpuSpecs = z.infer<typeof CpuSpecsSchema>;
 
 export const MotherboardSpecsSchema = z.object({
@@ -157,6 +175,7 @@ export const RequirementsSchema = z.object({
   budgetMaxCents: z.number().int().positive(),
   budgetFlexible: z.boolean(),
   gamingResolution: z.enum(['1080p', '1440p', '4k']).optional(),
+  gamingDemand: z.enum(['light', 'demanding']).optional(),
   preferences: z
     .object({
       cpuBrand: z.enum(['amd', 'intel']).optional(),

@@ -124,8 +124,8 @@ describe('Database Tests', () => {
     
     // Try to insert cpu_specs for this gpu component
     await expect(db.execute(sql`
-      INSERT INTO cpu_specs (component_id, type, socket, cores, threads, tdp_w, has_igpu, includes_cooler, memory_types, perf_score)
-      VALUES ('00000000-0000-0000-0000-000000000001', 'cpu', 'S', 1, 1, 1, false, false, '{"DDR4"}', 50)
+      INSERT INTO cpu_specs (component_id, type, socket, cores, threads, tdp_w, has_igpu, igpu_score, includes_cooler, memory_types, perf_score)
+      VALUES ('00000000-0000-0000-0000-000000000001', 'cpu', 'S', 1, 1, 1, false, 0, false, '{"DDR4"}', 50)
     `)).rejects.toThrow();
   });
 
@@ -286,5 +286,94 @@ describe('Database Tests', () => {
 
     const caseB = cases.find(c => c.name === 'Case B') as any;
     expect(caseB.specs.includedPsu).toBeNull();
+  });
+
+  it('14. migrar de 0001 a 0002 con una CPU con has_igpu ya cargada termina con igpu_score = 1 y la restricción activa', async () => {
+    const freshDb = createDb({ pglite: true });
+    const migrationsDir = path.join(__dirname, '..', 'migrations');
+
+    const sql0001 = await fs.readFile(path.join(migrationsDir, '0001_catalog.sql'), 'utf-8');
+    await freshDb.execRaw(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        name text PRIMARY KEY,
+        applied_at timestamptz NOT NULL DEFAULT now()
+      );
+    `);
+    await freshDb.applyMigration('0001_catalog.sql', sql0001);
+
+    const cpuIgpuId = '00000000-0000-0000-0000-000000000001';
+    const cpuNoIgpuId = '00000000-0000-0000-0000-000000000002';
+    await freshDb.execute(sql`
+      INSERT INTO components (id, type, brand, model, canonical_name)
+      VALUES 
+        (${cpuIgpuId}, 'cpu', 'Intel', 'Core i5', 'Intel i5 iGPU'),
+        (${cpuNoIgpuId}, 'cpu', 'AMD', 'Ryzen 5', 'AMD Ryzen No iGPU')
+    `);
+    await freshDb.execute(sql`
+      INSERT INTO cpu_specs (component_id, type, socket, cores, threads, tdp_w, has_igpu, includes_cooler, memory_types, perf_score)
+      VALUES 
+        (${cpuIgpuId}, 'cpu', 'LGA1700', 6, 12, 65, true, true, '{"DDR4"}', 70),
+        (${cpuNoIgpuId}, 'cpu', 'AM4', 6, 12, 65, false, true, '{"DDR4"}', 70)
+    `);
+
+    await migrate(freshDb, { log: () => {} });
+
+    const cpuWithIgpu = getRows(await freshDb.execute(sql`
+      SELECT igpu_score, has_igpu FROM cpu_specs WHERE component_id = ${cpuIgpuId}
+    `));
+    expect(cpuWithIgpu[0].igpu_score).toBe(1);
+
+    const cpuWithoutIgpu = getRows(await freshDb.execute(sql`
+      SELECT igpu_score, has_igpu FROM cpu_specs WHERE component_id = ${cpuNoIgpuId}
+    `));
+    expect(cpuWithoutIgpu[0].igpu_score).toBe(0);
+
+    // Restricción activa: has_igpu true con igpu_score 0 falla
+    await expect(freshDb.execute(sql`
+      UPDATE cpu_specs SET igpu_score = 0 WHERE component_id = ${cpuIgpuId}
+    `)).rejects.toThrow();
+
+    // Restricción activa: has_igpu false con igpu_score > 0 falla
+    await expect(freshDb.execute(sql`
+      UPDATE cpu_specs SET igpu_score = 1 WHERE component_id = ${cpuNoIgpuId}
+    `)).rejects.toThrow();
+  });
+
+  it('15. insertar has_igpu true con igpu_score 0 falla', async () => {
+    const compId = '00000000-0000-0000-0000-000000000010';
+    await db.execute(sql`
+      INSERT INTO components (id, type, brand, model, canonical_name)
+      VALUES (${compId}, 'cpu', 'Intel', 'Core i3', 'Intel i3 Test')
+    `);
+
+    await expect(db.execute(sql`
+      INSERT INTO cpu_specs (component_id, type, socket, cores, threads, tdp_w, has_igpu, igpu_score, includes_cooler, memory_types, perf_score)
+      VALUES (${compId}, 'cpu', 'LGA1700', 4, 8, 60, true, 0, true, '{"DDR4"}', 50)
+    `)).rejects.toThrow();
+  });
+
+  it('16. getCatalog devuelve igpuScore', async () => {
+    await importCsv(db, { tnStoreId: 1, storeName: 'S', filePath: path.join(__dirname, 'fixtures/sample.csv') });
+    await seedComponents(db, path.join(__dirname, 'fixtures/components.json'));
+    await applyMappings(db, 1, path.join(__dirname, 'fixtures/mappings.json'));
+
+    const catalog = await getCatalog(db, 1);
+    const cpu = catalog.find(c => c.type === 'cpu');
+    expect(cpu).toBeDefined();
+    expect(cpu?.specs).toHaveProperty('igpuScore');
+    expect((cpu?.specs as any).igpuScore).toBe(0);
+
+    // Insertar store_variant para Intel Core i5-12400 (que tiene hasIgpu: true, igpuScore: 10)
+    await db.execute(sql`
+      INSERT INTO store_variants (store_id, tn_product_id, tn_variant_id, tn_handle, variant_label, name, category_path, price_cents, stock, published, source, mapping_status, advisor_enabled, component_id)
+      SELECT id, 888, 888, 'cpu-igpu-handle', NULL, 'Intel i5 con iGPU', 'C', 30000000, 5, true, 'api', 'confirmed', true, (SELECT id FROM components WHERE canonical_name = 'Intel Core i5-12400')
+      FROM stores WHERE tn_store_id = 1
+    `);
+
+    const catalogUpdated = await getCatalog(db, 1);
+    const igpuCpu = catalogUpdated.find(c => c.name === 'Intel i5 con iGPU');
+    expect(igpuCpu).toBeDefined();
+    expect((igpuCpu?.specs as any).igpuScore).toBe(10);
+    expect((igpuCpu?.specs as any).hasIgpu).toBe(true);
   });
 });

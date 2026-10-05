@@ -65,6 +65,7 @@ describe('Contracts & Schemas (@pcadvisor/shared)', () => {
       threads: 12,
       tdpW: 65,
       hasIgpu: true,
+      igpuScore: 10,
       includesCooler: true,
       memoryTypes: ['DDR5'],
       perfScore: 78,
@@ -408,6 +409,105 @@ describe('Contracts & Schemas (@pcadvisor/shared)', () => {
     expect(CompatibilityResultSchema.parse(compatResultWithWarnings)).toEqual(compatResultWithWarnings);
   });
 
+  it('validates CpuSpecs igpuScore consistency (superRefine)', () => {
+    const baseCpuSpecs = {
+      socket: 'AM5',
+      cores: 6,
+      threads: 12,
+      tdpW: 65,
+      includesCooler: true,
+      memoryTypes: ['DDR5' as const],
+      perfScore: 78,
+    };
+
+    // CPU con hasIgpu false e igpuScore 5 falla
+    expect(() =>
+      CpuSpecsSchema.parse({
+        ...baseCpuSpecs,
+        hasIgpu: false,
+        igpuScore: 5,
+      })
+    ).toThrow();
+
+    // CPU con hasIgpu true e igpuScore 0 falla
+    expect(() =>
+      CpuSpecsSchema.parse({
+        ...baseCpuSpecs,
+        hasIgpu: true,
+        igpuScore: 0,
+      })
+    ).toThrow();
+
+    // Los dos casos coherentes validan
+    expect(() =>
+      CpuSpecsSchema.parse({
+        ...baseCpuSpecs,
+        hasIgpu: false,
+        igpuScore: 0,
+      })
+    ).not.toThrow();
+
+    expect(() =>
+      CpuSpecsSchema.parse({
+        ...baseCpuSpecs,
+        hasIgpu: true,
+        igpuScore: 10,
+      })
+    ).not.toThrow();
+  });
+
+  it('validates Requirements gamingDemand', () => {
+    const baseRequirements = {
+      useCases: ['gaming' as const],
+      budgetMaxCents: 10000000,
+      budgetFlexible: false,
+      gamingResolution: '1080p' as const,
+    };
+
+    // Requirements con gamingDemand 'light' valida
+    expect(
+      RequirementsSchema.parse({
+        ...baseRequirements,
+        gamingDemand: 'light',
+      })
+    ).toMatchObject({
+      gamingDemand: 'light',
+    });
+
+    // Requirements con gamingDemand 'medium' falla
+    expect(() =>
+      RequirementsSchema.parse({
+        ...baseRequirements,
+        gamingDemand: 'medium' as any,
+      })
+    ).toThrow();
+  });
+
+  it('CatalogItemSchema continues working with refined CpuSpecs', () => {
+    // Valid item
+    expect(CatalogItemSchema.parse(validCpu)).toEqual(validCpu);
+
+    // Inconsistent CpuSpecs inside CatalogItem fails
+    const invalidCpuItem = {
+      ...validCpu,
+      specs: {
+        ...validCpu.specs,
+        hasIgpu: false,
+        igpuScore: 5,
+      },
+    };
+    expect(() => CatalogItemSchema.parse(invalidCpuItem)).toThrow();
+
+    const invalidCpuItemZeroIgpu = {
+      ...validCpu,
+      specs: {
+        ...validCpu.specs,
+        hasIgpu: true,
+        igpuScore: 0,
+      },
+    };
+    expect(() => CatalogItemSchema.parse(invalidCpuItemZeroIgpu)).toThrow();
+  });
 
   it('exports all 23 schema definitions from @pcadvisor/shared index', () => {
     const schemas = [

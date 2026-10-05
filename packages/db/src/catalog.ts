@@ -35,6 +35,7 @@ function toCpuSpecs(row: any): CpuSpecs {
     threads: row.threads,
     tdpW: row.tdp_w,
     hasIgpu: row.has_igpu,
+    igpuScore: row.igpu_score,
     includesCooler: row.includes_cooler,
     memoryTypes: parsePgArray(row.memory_types) as any,
     perfScore: row.perf_score,

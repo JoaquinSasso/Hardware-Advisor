@@ -55,6 +55,7 @@ export const cpuSpecs = pgTable('cpu_specs', {
   threads: integer('threads').notNull(),
   tdpW: integer('tdp_w').notNull(),
   hasIgpu: boolean('has_igpu').notNull(),
+  igpuScore: integer('igpu_score').notNull(),
   includesCooler: boolean('includes_cooler').notNull(),
   memoryTypes: memoryTypeEnum('memory_types').array().notNull(),
   perfScore: integer('perf_score').notNull(),

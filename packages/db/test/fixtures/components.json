@@ -10,6 +10,7 @@
       "threads": 12,
       "tdpW": 65,
       "hasIgpu": false,
+      "igpuScore": 0,
       "includesCooler": true,
       "memoryTypes": [
         "DDR4"
@@ -28,6 +29,7 @@
       "threads": 12,
       "tdpW": 65,
       "hasIgpu": true,
+      "igpuScore": 10,
       "includesCooler": true,
       "memoryTypes": [
         "DDR4",

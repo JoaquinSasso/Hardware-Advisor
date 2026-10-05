@@ -10,6 +10,8 @@ import {
 } from '@pcadvisor/shared';
 
 export function buildCpu(overrides?: Partial<CpuSpecs>): CatalogItem {
+  const hasIgpu = overrides?.hasIgpu ?? false;
+  const igpuScore = overrides?.igpuScore ?? (hasIgpu ? 10 : 0);
   return {
     type: 'cpu',
     componentId: 'cpu-1',
@@ -23,7 +25,8 @@ export function buildCpu(overrides?: Partial<CpuSpecs>): CatalogItem {
       cores: 6,
       threads: 12,
       tdpW: 65,
-      hasIgpu: false,
+      hasIgpu,
+      igpuScore,
       includesCooler: true,
       memoryTypes: ['DDR5'],
       perfScore: 80,

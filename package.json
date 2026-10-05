@@ -6,6 +6,7 @@
     "test": "pnpm -r test"
   },
   "devDependencies": {
+    "fast-check": "^4.10.2",
     "vitest": "3.0.0"
   }
 }
