@@ -207,6 +207,8 @@ export const ViolationCodeSchema = z.enum([
   'NVME_SLOT',
   'PSU_POWER',
   'PSU_FORM_FACTOR',
+  'UNEXPECTED_COMPONENT',
+  'SATA_PORTS',
 ]);
 export type ViolationCode = z.infer<typeof ViolationCodeSchema>;
 
@@ -217,9 +219,22 @@ export const ViolationSchema = z.object({
 });
 export type Violation = z.infer<typeof ViolationSchema>;
 
+export const WarningCodeSchema = z.enum([
+  'BIOS_UPDATE_MAY_BE_REQUIRED',
+  'SINGLE_CHANNEL_MEMORY',
+]);
+export type WarningCode = z.infer<typeof WarningCodeSchema>;
+
+export const CompatibilityWarningSchema = z.object({
+  code: WarningCodeSchema,
+  message: z.string(),
+});
+export type CompatibilityWarning = z.infer<typeof CompatibilityWarningSchema>;
+
 export const CompatibilityResultSchema = z.object({
   ok: z.boolean(),
   violations: z.array(ViolationSchema),
+  warnings: z.array(CompatibilityWarningSchema),
 });
 export type CompatibilityResult = z.infer<typeof CompatibilityResultSchema>;
 

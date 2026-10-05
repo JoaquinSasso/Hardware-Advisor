@@ -364,7 +364,7 @@ describe('Contracts & Schemas (@pcadvisor/shared)', () => {
   });
 
   // Pruebas adicionales de contratos restantes
-  it('validates Build, CompatibilityResult and EventRequest', () => {
+  it('validates Build and EventRequest', () => {
     const build = makeBuild('build-1');
     expect(BuildSchema.parse(build)).toEqual(build);
 
@@ -375,17 +375,39 @@ describe('Contracts & Schemas (@pcadvisor/shared)', () => {
     };
     expect(ViolationSchema.parse(violation)).toEqual(violation);
 
-    const compatResult = {
-      ok: false,
-      violations: [violation],
-    };
-    expect(CompatibilityResultSchema.parse(compatResult)).toEqual(compatResult);
-
     const validEvent = { type: 'cart_added' as const };
     expect(EventRequestSchema.parse(validEvent)).toEqual(validEvent);
 
     expect(() => EventRequestSchema.parse({ type: 'unknown_event' })).toThrow();
   });
+
+  it('CompatibilityResult sin warnings falla', () => {
+    const violation = {
+      code: 'CPU_MB_SOCKET' as const,
+      message: 'Socket mismatch between CPU and Motherboard',
+      componentTypes: ['cpu', 'motherboard'] as const,
+    };
+    const compatResultWithoutWarnings = {
+      ok: false,
+      violations: [violation],
+    };
+    expect(() => CompatibilityResultSchema.parse(compatResultWithoutWarnings)).toThrow();
+  });
+
+  it('CompatibilityResult con warnings valida', () => {
+    const violation = {
+      code: 'CPU_MB_SOCKET' as const,
+      message: 'Socket mismatch between CPU and Motherboard',
+      componentTypes: ['cpu', 'motherboard'] as const,
+    };
+    const compatResultWithWarnings = {
+      ok: false,
+      violations: [violation],
+      warnings: [{ code: 'SINGLE_CHANNEL_MEMORY' as const, message: 'x' }],
+    };
+    expect(CompatibilityResultSchema.parse(compatResultWithWarnings)).toEqual(compatResultWithWarnings);
+  });
+
 
   it('exports all 23 schema definitions from @pcadvisor/shared index', () => {
     const schemas = [

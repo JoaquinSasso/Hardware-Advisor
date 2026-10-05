@@ -4,5 +4,8 @@
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "vitest": "3.0.0"
   }
 }
