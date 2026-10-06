@@ -128,7 +128,7 @@ export function recommend(req: Requirements, catalog: CatalogItem[]): RecommendR
                   const totalCents = costG + psuCost;
 
                   const psuEfectiva = psu ? psu.specs : myCase.specs.includedPsu;
-                  if (!psuEfectiva) return; // Should not happen given previous checks
+                  if (!psuEfectiva) throw new Error(`Sin fuente efectiva para el gabinete ${myCase.tnVariantId}`);
 
                   if (gpu && !isCertifiedPsu(psuEfectiva.efficiency)) return;
 
