@@ -1,0 +1,17 @@
+{
+  "name": "@pcadvisor/devchat",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build"
+  },
+  "dependencies": {
+    "@pcadvisor/advisor-client": "workspace:*",
+    "@pcadvisor/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  }
+}

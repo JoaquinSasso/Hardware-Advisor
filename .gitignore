@@ -1,12 +1,7 @@
-node_modules/
-dist/
-.DS_Store
-Thumbs.db
-*.log
 
-data/
-*.csv
-!packages/db/test/fixtures/*.csv
-!packages/db/seed/demo/*.csv
+.env
+.env.*
+!.env.example
 .pglite/
-apps/api/.env
+dist/
+node_modules/
