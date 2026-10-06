@@ -61,7 +61,8 @@ export function checkCompatibility(parts: Part[]): CompatibilityResult {
   const singleTypes: ComponentType[] = ['cpu', 'motherboard', 'case', 'gpu', 'psu'];
   for (const type of singleTypes) {
     const typeParts = getParts(type);
-    if (typeParts.length > 1 || (typeParts.length === 1 && typeParts[0].qty > 1)) {
+    const firstTypePart = typeParts[0];
+    if (typeParts.length > 1 || (typeParts.length === 1 && firstTypePart && firstTypePart.qty > 1)) {
       violations.push({
         code: 'UNEXPECTED_COMPONENT',
         message: `No se puede tener más de un componente de tipo ${type}.`,
@@ -98,13 +99,22 @@ export function checkCompatibility(parts: Part[]): CompatibilityResult {
   }
 
   // Fase 2 - Reglas técnicas
-  const cpu = cpus[0].item;
-  const mb = motherboards[0].item;
-  const ram = rams[0].item;
-  const ramQty = rams[0].qty;
-  const gpu = gpus.length > 0 ? gpus[0].item : null;
-  const myCase = cases[0].item;
-  const psuPart = psus.length > 0 ? psus[0].item : null;
+  const cpuPart = cpus[0];
+  const mbPart = motherboards[0];
+  const ramPart = rams[0];
+  const casePart = cases[0];
+
+  if (!cpuPart || !mbPart || !ramPart || !casePart) {
+    throw new Error('Faltan componentes requeridos');
+  }
+
+  const cpu = cpuPart.item;
+  const mb = mbPart.item;
+  const ram = ramPart.item;
+  const ramQty = ramPart.qty;
+  const gpu = gpus.length > 0 ? gpus[0]?.item : null;
+  const myCase = casePart.item;
+  const psuPart = psus.length > 0 ? psus[0]?.item : null;
 
   if (cpu.type !== 'cpu' || mb.type !== 'motherboard' || ram.type !== 'ram' || myCase.type !== 'case') {
     throw new Error('Unexpected types');

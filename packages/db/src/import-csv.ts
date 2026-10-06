@@ -18,14 +18,17 @@ export async function importCsv(
   // 1. Create or get store
   let storeId: string;
   const existingStores = await db.select().from(stores).where(eq(stores.tnStoreId, opts.tnStoreId));
-  if (existingStores.length > 0) {
-    storeId = existingStores[0].id;
+  const firstExisting = existingStores[0];
+  if (firstExisting) {
+    storeId = firstExisting.id;
   } else {
     const insertedStore = await db.insert(stores).values({
       tnStoreId: opts.tnStoreId,
       name: opts.storeName,
     }).returning();
-    storeId = insertedStore[0].id;
+    const firstInserted = insertedStore[0];
+    if (!firstInserted) throw new Error('Failed to insert store');
+    storeId = firstInserted.id;
   }
 
   const parser = fs.createReadStream(opts.filePath)

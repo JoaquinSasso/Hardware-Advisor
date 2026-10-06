@@ -13,7 +13,10 @@
     "store:config": "tsx src/cli.ts store:config"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
   "dependencies": {
     "@pcadvisor/shared": "workspace:*",
@@ -28,5 +31,7 @@
     "@types/node": "^20.11.10",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
-  }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts"
 }

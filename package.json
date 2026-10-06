@@ -1,12 +1,13 @@
 {
-  "name": "pcadvisor",
-  "private": true,
-  "scripts": {
-    "build": "pnpm -r build",
-    "test": "pnpm -r test"
-  },
-  "devDependencies": {
-    "fast-check": "^4.10.2",
-    "vitest": "3.0.0"
-  }
+	"name": "pcadvisor",
+	"private": true,
+	"scripts": {
+		"build": "pnpm -r build",
+		"test": "pnpm -r test",
+		"check": "pnpm -r build && pnpm -r test"
+	},
+	"devDependencies": {
+		"fast-check": "^4.10.2",
+		"vitest": "3.0.0"
+	}
 }

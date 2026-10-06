@@ -39,15 +39,18 @@ export async function seedComponents(db: DbClient, filePath: string) {
 
       const parsed = schema.safeParse(specs);
       if (!parsed.success) {
-        throw new Error(`Validation failed for ${canonicalName}, field: ${parsed.error.errors[0].path.join('.')}`);
+        const firstError = parsed.error.errors[0];
+        if (!firstError) throw new Error(`Validation failed for ${canonicalName}`);
+        throw new Error(`Validation failed for ${canonicalName}, field: ${firstError.path.join('.')}`);
       }
 
       const existing = getRows(await tx.execute(sql`SELECT id FROM components WHERE canonical_name = ${canonicalName}`));
       let componentId;
 
-      if (existing.length > 0) {
+      const firstExisting = existing[0];
+      if (firstExisting) {
         updated++;
-        componentId = existing[0].id;
+        componentId = firstExisting.id;
         await tx.execute(sql`
           UPDATE components SET brand = ${brand}, model = ${model} WHERE id = ${componentId}
         `);
@@ -58,7 +61,9 @@ export async function seedComponents(db: DbClient, filePath: string) {
           VALUES (${type}, ${brand}, ${model}, ${canonicalName})
           RETURNING id
         `));
-        componentId = compResult[0].id;
+        const firstCompResult = compResult[0];
+        if (!firstCompResult) throw new Error(`Failed to insert component ${canonicalName}`);
+        componentId = firstCompResult.id;
       }
 
       const snakeSpecs = toSnakeCase(specs);

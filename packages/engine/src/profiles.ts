@@ -105,7 +105,10 @@ export function resolveProfile(req: Requirements): {
   });
 
   for (let i = 0; i < missing; i++) {
-    arr[i % 4].w += 1;
+    const item = arr[i % 4];
+    if (item) {
+      item.w += 1;
+    }
   }
 
   const finalWeights = { cpu: 0, gpu: 0, ram: 0, storage: 0 };
