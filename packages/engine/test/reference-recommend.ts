@@ -5,12 +5,12 @@ import {
   type BuildItem,
   BuildSchema,
 } from '@pcadvisor/shared';
-import { checkCompatibility } from './compatibility.js';
-import { requiredPsuW } from './power.js';
-import { resolveProfile, MIN_GAMING_IGPU_SCORE } from './profiles.js';
-import { calculateBuildScore } from './scoring.js';
-import { getCpuBrand, getGpuBrand, isCertifiedPsu, WARNING_AUDIENCE } from './policy.js';
-import type { CpuItem, MotherboardItem, RamItem, GpuItem, StorageItem, CaseItem, PsuItem, Part } from './types.js';
+import { checkCompatibility } from '../src/compatibility.js';
+import { requiredPsuW } from '../src/power.js';
+import { resolveProfile, MIN_GAMING_IGPU_SCORE } from '../src/profiles.js';
+import { calculateBuildScore } from '../src/scoring.js';
+import { getCpuBrand, getGpuBrand, isCertifiedPsu, WARNING_AUDIENCE } from '../src/policy.js';
+import type { CpuItem, MotherboardItem, RamItem, GpuItem, StorageItem, CaseItem, PsuItem, Part } from '../src/types.js';
 
 export type RecommendResult = {
   builds: Build[];
@@ -18,7 +18,7 @@ export type RecommendResult = {
 };
 
 type Candidate = {
-  id?: string;
+  id: string;
   cpu: CpuItem;
   mb: MotherboardItem;
   ram: RamItem;
@@ -39,34 +39,7 @@ function buildId(parts: { tnVariantId: number; qty: number }[]): string {
     .join('-');
 }
 
-function getCandidateId(c: Candidate): string {
-  if (c.id === undefined) {
-    const partsList = [
-      { tnVariantId: c.cpu.tnVariantId, qty: 1 },
-      { tnVariantId: c.mb.tnVariantId, qty: 1 },
-      { tnVariantId: c.ram.tnVariantId, qty: c.ramQty },
-      { tnVariantId: c.myCase.tnVariantId, qty: 1 },
-      { tnVariantId: c.storage.tnVariantId, qty: 1 },
-    ];
-    if (c.gpu) partsList.push({ tnVariantId: c.gpu.tnVariantId, qty: 1 });
-    if (c.psu) partsList.push({ tnVariantId: c.psu.tnVariantId, qty: 1 });
-    c.id = buildId(partsList);
-  }
-  return c.id;
-}
-
-function compareCandidates(a: Candidate, b: Candidate): number {
-  if (a.buildScore !== b.buildScore) return b.buildScore - a.buildScore;
-  if (a.totalCents !== b.totalCents) return a.totalCents - b.totalCents;
-  
-  const idA = getCandidateId(a);
-  const idB = getCandidateId(b);
-  if (idA < idB) return -1;
-  if (idA > idB) return 1;
-  return 0;
-}
-
-export function recommend(req: Requirements, catalog: CatalogItem[]): RecommendResult {
+export function recommendReference(req: Requirements, catalog: CatalogItem[]): RecommendResult {
   const { weights, gpuPolicy, isGaming } = resolveProfile(req);
 
   const budgetCap = req.budgetFlexible
@@ -84,15 +57,8 @@ export function recommend(req: Requirements, catalog: CatalogItem[]): RecommendR
   const gpus = catalog.filter((i): i is GpuItem => i.type === 'gpu' && (!prefGpuBrand || getGpuBrand(i) === prefGpuBrand));
   const psus = catalog.filter((i): i is PsuItem => i.type === 'psu');
 
+  const candidates: Candidate[] = [];
   let cheapestOverallValidTotalCents: number | null = null;
-
-  const perfThreshold = budgetCap;
-  const balancedThreshold = Math.floor(req.budgetMaxCents * 85 / 100);
-  const budgetThreshold = Math.floor(req.budgetMaxCents * 70 / 100);
-
-  let perfCand: Candidate | null = null;
-  let balancedCand: Candidate | null = null;
-  let budgetCand: Candidate | null = null;
 
   for (const cpu of cpus) {
     if (cpu.stock < 1) continue;
@@ -180,25 +146,20 @@ export function recommend(req: Requirements, catalog: CatalogItem[]): RecommendR
 
                   const buildScore = calculateBuildScore(cpu, gpu, ram, ramQty, storage, weights);
 
-                  const cand: Candidate = {
-                    cpu, mb, ram, ramQty, myCase, storage, gpu, psu, totalCents, buildScore
-                  };
+                  const partsList = [
+                    { tnVariantId: cpu.tnVariantId, qty: 1 },
+                    { tnVariantId: mb.tnVariantId, qty: 1 },
+                    { tnVariantId: ram.tnVariantId, qty: ramQty },
+                    { tnVariantId: myCase.tnVariantId, qty: 1 },
+                    { tnVariantId: storage.tnVariantId, qty: 1 },
+                  ];
+                  if (gpu) partsList.push({ tnVariantId: gpu.tnVariantId, qty: 1 });
+                  if (psu) partsList.push({ tnVariantId: psu.tnVariantId, qty: 1 });
 
-                  if (totalCents <= perfThreshold) {
-                    if (!perfCand || compareCandidates(cand, perfCand) < 0) {
-                      perfCand = cand;
-                    }
-                  }
-                  if (totalCents <= balancedThreshold) {
-                    if (!balancedCand || compareCandidates(cand, balancedCand) < 0) {
-                      balancedCand = cand;
-                    }
-                  }
-                  if (totalCents <= budgetThreshold) {
-                    if (!budgetCand || compareCandidates(cand, budgetCand) < 0) {
-                      budgetCand = cand;
-                    }
-                  }
+                  candidates.push({
+                    id: buildId(partsList),
+                    cpu, mb, ram, ramQty, myCase, storage, gpu, psu, totalCents, buildScore
+                  });
                 };
 
                 if (myCase.specs.includedPsu) {
@@ -221,32 +182,54 @@ export function recommend(req: Requirements, catalog: CatalogItem[]): RecommendR
     }
   }
 
-  const selectedCandidates: { cand: Candidate; tier: 'budget' | 'balanced' | 'performance' }[] = [];
-  
-  if (budgetCand) selectedCandidates.push({ cand: budgetCand, tier: 'budget' });
-  if (balancedCand && (!budgetCand || getCandidateId(balancedCand) !== getCandidateId(budgetCand))) {
-    selectedCandidates.push({ cand: balancedCand, tier: 'balanced' });
-  }
-  if (perfCand && (!balancedCand || getCandidateId(perfCand) !== getCandidateId(balancedCand)) && (!budgetCand || getCandidateId(perfCand) !== getCandidateId(budgetCand))) {
-    selectedCandidates.push({ cand: perfCand, tier: 'performance' });
-  }
-
-  for (const { cand } of selectedCandidates) {
+  for (const c of candidates) {
     const parts: Part[] = [
-      { item: cand.cpu, qty: 1 },
-      { item: cand.mb, qty: 1 },
-      { item: cand.ram, qty: cand.ramQty },
-      { item: cand.storage, qty: 1 },
-      { item: cand.myCase, qty: 1 },
+      { item: c.cpu, qty: 1 },
+      { item: c.mb, qty: 1 },
+      { item: c.ram, qty: c.ramQty },
+      { item: c.storage, qty: 1 },
+      { item: c.myCase, qty: 1 },
     ];
-    if (cand.gpu) parts.push({ item: cand.gpu, qty: 1 });
-    if (cand.psu) parts.push({ item: cand.psu, qty: 1 });
+    if (c.gpu) parts.push({ item: c.gpu, qty: 1 });
+    if (c.psu) parts.push({ item: c.psu, qty: 1 });
 
     const comp = checkCompatibility(parts);
     if (!comp.ok) {
       const codes = comp.violations.map(v => v.code);
-      throw new Error(`Candidate ${getCandidateId(cand)} failed checkCompatibility: ${codes.join(', ')}`);
+      throw new Error(`Candidate ${c.id} failed checkCompatibility: ${codes.join(', ')}`);
     }
+  }
+
+  candidates.sort((a, b) => {
+    if (a.buildScore !== b.buildScore) return b.buildScore - a.buildScore;
+    if (a.totalCents !== b.totalCents) return a.totalCents - b.totalCents;
+    if (a.id < b.id) return -1;
+    if (a.id > b.id) return 1;
+    return 0;
+  });
+
+  const perfThreshold = budgetCap;
+  const balancedThreshold = Math.floor(req.budgetMaxCents * 85 / 100);
+  const budgetThreshold = Math.floor(req.budgetMaxCents * 70 / 100);
+
+  let perfCand: Candidate | null = null;
+  let balancedCand: Candidate | null = null;
+  let budgetCand: Candidate | null = null;
+
+  for (const c of candidates) {
+    if (!perfCand && c.totalCents <= perfThreshold) perfCand = c;
+    if (!balancedCand && c.totalCents <= balancedThreshold) balancedCand = c;
+    if (!budgetCand && c.totalCents <= budgetThreshold) budgetCand = c;
+  }
+
+  const selectedCandidates: { cand: Candidate; tier: 'budget' | 'balanced' | 'performance' }[] = [];
+  
+  if (budgetCand) selectedCandidates.push({ cand: budgetCand, tier: 'budget' });
+  if (balancedCand && (!budgetCand || balancedCand.id !== budgetCand.id)) {
+    selectedCandidates.push({ cand: balancedCand, tier: 'balanced' });
+  }
+  if (perfCand && (!balancedCand || perfCand.id !== balancedCand.id) && (!budgetCand || perfCand.id !== budgetCand.id)) {
+    selectedCandidates.push({ cand: perfCand, tier: 'performance' });
   }
 
   const builds: Build[] = [];
@@ -296,7 +279,7 @@ export function recommend(req: Requirements, catalog: CatalogItem[]): RecommendR
     }
 
     const build: Build = {
-      id: getCandidateId(cand),
+      id: cand.id,
       tier,
       items: buildItems,
       totalCents: cand.totalCents,
