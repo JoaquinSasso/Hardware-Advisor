@@ -106,9 +106,10 @@ export function resolveProfile(req: Requirements): {
 
   for (let i = 0; i < missing; i++) {
     const item = arr[i % 4];
-    if (item) {
-      item.w += 1;
+    if (!item) {
+      throw new Error(`Item not found at index ${i % 4} for distributing missing points`);
     }
+    item.w += 1;
   }
 
   const finalWeights = { cpu: 0, gpu: 0, ram: 0, storage: 0 };

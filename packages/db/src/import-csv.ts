@@ -16,7 +16,7 @@ export async function importCsv(
   const warnings: string[] = [];
 
   // 1. Create or get store
-  let storeId: string;
+  let storeId: string | undefined;
   const existingStores = await db.select().from(stores).where(eq(stores.tnStoreId, opts.tnStoreId));
   const firstExisting = existingStores[0];
   if (firstExisting) {
@@ -26,9 +26,11 @@ export async function importCsv(
       tnStoreId: opts.tnStoreId,
       name: opts.storeName,
     }).returning();
-    const firstInserted = insertedStore[0];
-    if (!firstInserted) throw new Error('Failed to insert store');
-    storeId = firstInserted.id;
+    storeId = insertedStore[0]?.id;
+  }
+
+  if (!storeId) {
+    throw new Error(`Failed to find or insert store ${opts.tnStoreId}`);
   }
 
   const parser = fs.createReadStream(opts.filePath)

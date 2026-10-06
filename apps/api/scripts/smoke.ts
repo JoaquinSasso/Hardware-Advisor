@@ -4,6 +4,8 @@ import { config } from '../src/config.js';
 import { runChatTurn } from '../src/chat/orchestrator.js';
 import { formatArs } from '../src/format.js';
 import { randomUUID } from 'crypto';
+import fs from "node:fs";
+import path from "node:path";
 
 async function main() {
   if (!config.GEMINI_API_KEY) {
@@ -13,10 +15,22 @@ async function main() {
     throw new Error('GEMINI_MODEL is required for smoke test');
   }
 
-  const db = createDb({
-    connectionString: config.DATABASE_URL,
-    pgliteDir: config.DATABASE_URL ? undefined : config.PGLITE_DIR,
-  });
+const dir = path.resolve(process.env.PGLITE_DIR ?? "../../packages/db/.pglite");
+if (!fs.existsSync(dir)) {
+	throw new Error(
+		`No existe la base PGlite en ${dir}. Cargá el demo con los comandos de packages/db.`,
+	);
+}
+console.log(`PGlite: ${dir}`);
+
+const db = createDb(
+	process.env.DATABASE_URL
+		? { url: process.env.DATABASE_URL }
+		: {
+				pglite: true,
+				dataDir: process.env.PGLITE_DIR ?? "../../packages/db/.pglite",
+			},
+);
 
   const llm = new GeminiClient(config.GEMINI_API_KEY, config.GEMINI_MODEL);
   const storeId = 900000001;

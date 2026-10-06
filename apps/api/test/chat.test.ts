@@ -272,4 +272,20 @@ describe('chat.ts / advisor.ts / events.ts', () => {
     
     getCatalogSpy.mockRestore();
   });
+
+  it('storeId "12abc" -> 400', async () => {
+    const fakeLlm = new FakeLlmClient([]);
+    const app = createApp({ db, llm: fakeLlm, config });
+
+    const reqBody = { storeId: '12abc', sessionId: '00000000-0000-0000-0000-000000000013', message: 'hola' };
+    const res = await app.request('/v1/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reqBody),
+    });
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('invalid_request');
+  });
 });

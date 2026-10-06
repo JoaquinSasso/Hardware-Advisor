@@ -1,24 +1,25 @@
 {
-  "name": "@pcadvisor/api",
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "build": "tsc",
-    "test": "vitest run",
-    "smoke": "tsx scripts/smoke.ts"
-  },
-  "dependencies": {
-    "@google/genai": "^2.27.0",
-    "@hono/node-server": "^1.13.0",
-    "hono": "^4.6.1",
-    "zod": "^3.23.8",
-    "@pcadvisor/shared": "workspace:*",
-    "@pcadvisor/db": "workspace:*",
-    "@pcadvisor/engine": "workspace:*"
-  },
-  "devDependencies": {
-    "tsx": "^4.19.1",
-    "vitest": "^3.0.0",
-    "typescript": "^5.0.0"
-  }
+	"name": "@pcadvisor/api",
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"build": "tsc",
+		"test": "vitest run",
+		"smoke": "tsx --env-file=.env scripts/smoke.ts",
+		"dev": "tsx watch --env-file=.env src/server.ts"
+	},
+	"dependencies": {
+		"@google/genai": "^2.27.0",
+		"@hono/node-server": "^1.13.0",
+		"hono": "^4.6.1",
+		"zod": "^3.23.8",
+		"@pcadvisor/shared": "workspace:*",
+		"@pcadvisor/db": "workspace:*",
+		"@pcadvisor/engine": "workspace:*"
+	},
+	"devDependencies": {
+		"tsx": "^4.19.1",
+		"vitest": "^3.0.0",
+		"typescript": "^5.0.0"
+	}
 }

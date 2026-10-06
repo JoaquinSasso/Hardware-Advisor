@@ -9,3 +9,4 @@ data/
 !packages/db/test/fixtures/*.csv
 !packages/db/seed/demo/*.csv
 .pglite/
+apps/api/.env

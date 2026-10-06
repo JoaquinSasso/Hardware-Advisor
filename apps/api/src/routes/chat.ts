@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { type DbClient, getOrCreateConversation, countUserTurns, getRecentTurns, StoreNotFoundError } from '@pcadvisor/db';
-import { ChatRequestSchema, type ChatResponse } from '@pcadvisor/shared';
+import { ChatRequestSchema, type ChatResponse, ChatResponseSchema } from '@pcadvisor/shared';
 import { runChatTurn } from '../chat/orchestrator.js';
 import { type LlmClient, LlmUnavailableError } from '../llm/types.js';
 import { type Config } from '../config.js';
@@ -18,14 +18,14 @@ export function createChatRouter(deps: { db: DbClient; llm: LlmClient; config: C
     
     const bodyResult = ChatRequestSchema.safeParse(body);
     if (!bodyResult.success) {
-      return c.json({ error: 'invalid_request', issues: bodyResult.error.errors.map(e => e.message) }, 400);
+      return c.json({ error: 'invalid_request', issues: bodyResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`) }, 400);
     }
     const reqData = bodyResult.data;
     const storeIdStr = reqData.storeId;
-    const storeId = parseInt(storeIdStr, 10);
-    if (isNaN(storeId)) {
+    if (!/^\d+$/.test(storeIdStr)) {
       return c.json({ error: 'invalid_request', issues: ['storeId must be a numeric string'] }, 400);
     }
+    const storeId = parseInt(storeIdStr, 10);
 
     try {
       const { id: conversationId } = await getOrCreateConversation(deps.db, { tnStoreId: storeId, sessionId: reqData.sessionId });
@@ -46,12 +46,12 @@ export function createChatRouter(deps: { db: DbClient; llm: LlmClient; config: C
         userMessage: reqData.message,
       });
 
-      const response: ChatResponse = {
+      const response: ChatResponse = ChatResponseSchema.parse({
         reply: result.reply,
         builds: result.builds && result.builds.length > 0 ? result.builds : undefined,
         recommendationId: result.recommendationId,
         suggestions: result.suggestions,
-      };
+      });
 
       return c.json(response, 200);
 

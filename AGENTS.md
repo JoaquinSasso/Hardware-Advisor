@@ -60,7 +60,7 @@ Los tests no requieren red ni Docker (Postgres de tests = PGlite en memoria).
 - **No crees ramas, no hagas checkout a otras ramas, no hagas merge, rebase, reset,
   push ni force-push.** Trabajás sobre la rama actual. El humano maneja el historial.
 - Podés usar `git status`, `git diff` y `git log` para inspeccionar.
-- No hagas commits salvo que la tarea lo pida.
+- Haz commit antes de cada tarea o corrección.
 
 ## Tests
 
