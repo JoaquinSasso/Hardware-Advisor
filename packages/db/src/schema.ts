@@ -10,6 +10,9 @@ import {
   foreignKey,
   unique,
   check,
+  index,
+  primaryKey,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
@@ -194,3 +197,51 @@ export const storeVariants = pgTable('store_variants', {
     storeHandleVariantUnique: unique('store_variants_store_id_tn_handle_variant_label_key').on(table.storeId, table.tnHandle, table.variantLabel).nullsNotDistinct(),
   };
 });
+
+export const turnRoleEnum = pgEnum('turn_role', ['user', 'assistant', 'tool']);
+export const eventTypeEnum = pgEnum('event_type', ['cart_added', 'whatsapp_clicked']);
+
+export const conversations = pgTable('conversations', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  storeId: uuid('store_id').notNull().references(() => stores.id, { onDelete: 'cascade' }),
+  sessionId: uuid('session_id').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  lastMessageAt: timestamp('last_message_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => {
+  return {
+    storeSessionUnique: unique().on(table.storeId, table.sessionId),
+    lastMessageAtIdx: index('conversations_last_message_at_idx').on(table.lastMessageAt),
+  };
+});
+
+export const conversationTurns = pgTable('conversation_turns', {
+  conversationId: uuid('conversation_id').notNull().references(() => conversations.id, { onDelete: 'cascade' }),
+  seq: integer('seq').notNull(),
+  role: turnRoleEnum('role').notNull(),
+  payload: jsonb('payload').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => {
+  return {
+    pk: primaryKey({ columns: [table.conversationId, table.seq] }),
+    seqCheck: check('conversation_turns_seq_check', sql`${table.seq} >= 1`),
+    payloadRoleCheck: check('conversation_turns_payload_role_check', sql`${table.payload}->>'role' = ${table.role}::text`),
+  };
+});
+
+export const recommendations = pgTable('recommendations', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  conversationId: uuid('conversation_id').notNull().references(() => conversations.id, { onDelete: 'cascade' }),
+  requirements: jsonb('requirements').notNull(),
+  builds: jsonb('builds').notNull(),
+  cheapestValidTotalCents: bigint('cheapest_valid_total_cents', { mode: 'number' }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const recommendationEvents = pgTable('recommendation_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  recommendationId: uuid('recommendation_id').notNull().references(() => recommendations.id, { onDelete: 'cascade' }),
+  type: eventTypeEnum('type').notNull(),
+  buildId: text('build_id').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+

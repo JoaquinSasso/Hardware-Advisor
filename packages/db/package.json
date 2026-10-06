@@ -9,7 +9,8 @@
     "db:migrate": "tsx src/cli.ts db:migrate",
     "import:csv": "tsx src/cli.ts import:csv",
     "seed:components": "tsx src/cli.ts seed:components",
-    "apply:mappings": "tsx src/cli.ts apply:mappings"
+    "apply:mappings": "tsx src/cli.ts apply:mappings",
+    "store:config": "tsx src/cli.ts store:config"
   },
   "exports": {
     ".": "./src/index.ts"

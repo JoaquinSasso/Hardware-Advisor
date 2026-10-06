@@ -24,6 +24,8 @@ import {
   type ChatRequest,
   type ChatResponse,
   type EventRequest,
+  type ChatTurn,
+  type AdvisorConfig,
   // Schemas
   ComponentTypeSchema,
   MemoryTypeSchema,
@@ -48,6 +50,8 @@ import {
   ChatRequestSchema,
   ChatResponseSchema,
   EventRequestSchema,
+  ChatTurnSchema,
+  AdvisorConfigSchema,
 } from './index.js';
 
 describe('Contracts & Schemas (@pcadvisor/shared)', () => {
@@ -376,10 +380,11 @@ describe('Contracts & Schemas (@pcadvisor/shared)', () => {
     };
     expect(ViolationSchema.parse(violation)).toEqual(violation);
 
-    const validEvent = { type: 'cart_added' as const };
+    const validEvent = { type: 'cart_added' as const, buildId: 'build-1' };
     expect(EventRequestSchema.parse(validEvent)).toEqual(validEvent);
 
-    expect(() => EventRequestSchema.parse({ type: 'unknown_event' })).toThrow();
+    expect(() => EventRequestSchema.parse({ type: 'unknown_event', buildId: 'build-1' })).toThrow();
+    expect(() => EventRequestSchema.parse({ type: 'cart_added' })).toThrow();
   });
 
   it('CompatibilityResult sin warnings falla', () => {
@@ -509,7 +514,102 @@ describe('Contracts & Schemas (@pcadvisor/shared)', () => {
     expect(() => CatalogItemSchema.parse(invalidCpuItemZeroIgpu)).toThrow();
   });
 
-  it('exports all 23 schema definitions from @pcadvisor/shared index', () => {
+  it('validates ChatTurnSchema: un turno de cada rol válido', () => {
+    const validUserTurn: ChatTurn = {
+      role: 'user',
+      text: 'Hola, necesito una PC para gaming.',
+    };
+    expect(ChatTurnSchema.parse(validUserTurn)).toEqual(validUserTurn);
+
+    const validAssistantTurnText: ChatTurn = {
+      role: 'assistant',
+      text: '¡Hola! ¿Cuál es tu presupuesto?',
+      toolCall: null,
+      providerData: null,
+    };
+    expect(ChatTurnSchema.parse(validAssistantTurnText)).toEqual(validAssistantTurnText);
+
+    const validAssistantTurnTool: ChatTurn = {
+      role: 'assistant',
+      text: null,
+      toolCall: {
+        name: 'recommend_builds',
+        args: { budgetMaxCents: 10000000 },
+      },
+      providerData: { custom: 123 },
+    };
+    expect(ChatTurnSchema.parse(validAssistantTurnTool)).toEqual(validAssistantTurnTool);
+
+    const validAssistantTurnBoth: ChatTurn = {
+      role: 'assistant',
+      text: 'Te recomiendo esta opción:',
+      toolCall: {
+        name: 'recommend_builds',
+        args: {},
+      },
+      providerData: null,
+    };
+    expect(ChatTurnSchema.parse(validAssistantTurnBoth)).toEqual(validAssistantTurnBoth);
+
+    const validToolTurn: ChatTurn = {
+      role: 'tool',
+      name: 'recommend_builds',
+      result: { ok: true, builds: [] },
+    };
+    expect(ChatTurnSchema.parse(validToolTurn)).toEqual(validToolTurn);
+  });
+
+  it('ChatTurnSchema: assistant con text y toolCall null falla', () => {
+    const invalidAssistant = {
+      role: 'assistant',
+      text: null,
+      toolCall: null,
+      providerData: null,
+    };
+    expect(() => ChatTurnSchema.parse(invalidAssistant)).toThrow('assistant turn needs text or toolCall');
+  });
+
+  it('ChatTurnSchema: user con 1001 caracteres falla', () => {
+    const invalidUser = {
+      role: 'user',
+      text: 'a'.repeat(1001),
+    };
+    expect(() => ChatTurnSchema.parse(invalidUser)).toThrow();
+  });
+
+  it('ChatTurnSchema: tool con otro name falla', () => {
+    const invalidTool = {
+      role: 'tool',
+      name: 'other_name',
+      result: {},
+    };
+    expect(() => ChatTurnSchema.parse(invalidTool)).toThrow();
+  });
+
+  it('validates AdvisorConfigSchema', () => {
+    const validCart: AdvisorConfig = {
+      checkoutMode: 'cart',
+      whatsappNumber: null,
+      initialSuggestions: ['PC Gamer $500k', 'PC Oficina $300k'],
+    };
+    expect(AdvisorConfigSchema.parse(validCart)).toEqual(validCart);
+
+    const validWhatsapp: AdvisorConfig = {
+      checkoutMode: 'whatsapp',
+      whatsappNumber: '+5491112345678',
+      initialSuggestions: [],
+    };
+    expect(AdvisorConfigSchema.parse(validWhatsapp)).toEqual(validWhatsapp);
+
+    const invalidTooManySuggestions = {
+      checkoutMode: 'cart',
+      whatsappNumber: null,
+      initialSuggestions: ['1', '2', '3', '4', '5'],
+    };
+    expect(() => AdvisorConfigSchema.parse(invalidTooManySuggestions)).toThrow();
+  });
+
+  it('exports all 25 schema definitions from @pcadvisor/shared index', () => {
     const schemas = [
       ComponentTypeSchema,
       MemoryTypeSchema,
@@ -534,9 +634,11 @@ describe('Contracts & Schemas (@pcadvisor/shared)', () => {
       ChatRequestSchema,
       ChatResponseSchema,
       EventRequestSchema,
+      ChatTurnSchema,
+      AdvisorConfigSchema,
     ];
 
-    expect(schemas).toHaveLength(23);
+    expect(schemas).toHaveLength(25);
     for (const schema of schemas) {
       expect(schema).toBeDefined();
       expect(typeof schema.parse).toBe('function');

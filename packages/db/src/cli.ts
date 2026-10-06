@@ -5,6 +5,7 @@ import { migrate } from './migrate.js';
 import { importCsv } from './import-csv.js';
 import { seedComponents } from './seed-components.js';
 import { applyMappings } from './apply-mappings.js';
+import { updateStoreConfig } from './conversations.js';
 
 async function main() {
   const args = process.argv.slice(2);
@@ -40,6 +41,26 @@ async function main() {
     if (!values.store || !values.file) throw new Error('Missing args');
     const { total, confirmed, ignored } = await applyMappings(db, parseInt(values.store, 10), values.file);
     console.log(`${total} vínculos (confirmados ${confirmed}, ignorados ${ignored})`);
+  } else if (command === 'store:config') {
+    const { values } = parseArgs({
+      args: args.slice(1).filter(a => a !== '--'),
+      options: {
+        store: { type: 'string' },
+        checkout: { type: 'string' },
+        whatsapp: { type: 'string' },
+      },
+      allowPositionals: true,
+    });
+    if (!values.store || !values.checkout) throw new Error('Missing args: --store and --checkout are required');
+    if (values.checkout !== 'cart' && values.checkout !== 'whatsapp') {
+      throw new Error(`Invalid checkout mode: ${values.checkout}. Must be 'cart' or 'whatsapp'`);
+    }
+    const config = await updateStoreConfig(db, {
+      tnStoreId: parseInt(values.store, 10),
+      checkoutMode: values.checkout as 'cart' | 'whatsapp',
+      whatsappNumber: values.whatsapp ?? null,
+    });
+    console.log(JSON.stringify(config));
   } else {
     console.error('Unknown command');
     process.exit(1);

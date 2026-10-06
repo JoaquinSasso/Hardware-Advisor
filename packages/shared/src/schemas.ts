@@ -278,5 +278,44 @@ export type ChatResponse = z.infer<typeof ChatResponseSchema>;
 
 export const EventRequestSchema = z.object({
   type: z.enum(['cart_added', 'whatsapp_clicked']),
+  buildId: z.string().min(1),
 });
 export type EventRequest = z.infer<typeof EventRequestSchema>;
+
+export const ChatTurnSchema = z
+  .discriminatedUnion('role', [
+    z.object({ role: z.literal('user'), text: z.string().min(1).max(1000) }),
+    z.object({
+      role: z.literal('assistant'),
+      text: z.string().nullable(),
+      toolCall: z
+        .object({
+          name: z.literal('recommend_builds'),
+          args: z.record(z.unknown()),
+        })
+        .nullable(),
+      providerData: z.record(z.unknown()).nullable(),
+    }),
+    z.object({
+      role: z.literal('tool'),
+      name: z.literal('recommend_builds'),
+      result: z.record(z.unknown()),
+    }),
+  ])
+  .superRefine((t, ctx) => {
+    if (t.role === 'assistant' && t.text === null && t.toolCall === null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'assistant turn needs text or toolCall',
+      });
+    }
+  });
+export type ChatTurn = z.infer<typeof ChatTurnSchema>;
+
+export const AdvisorConfigSchema = z.object({
+  checkoutMode: z.enum(['cart', 'whatsapp']),
+  whatsappNumber: z.string().nullable(),
+  initialSuggestions: z.array(z.string()).max(4),
+});
+export type AdvisorConfig = z.infer<typeof AdvisorConfigSchema>;
+
