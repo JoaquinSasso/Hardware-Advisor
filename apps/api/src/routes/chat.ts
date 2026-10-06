@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { type DbClient, getOrCreateConversation, countUserTurns, getRecentTurns, StoreNotFoundError } from '@pcadvisor/db';
 import { ChatRequestSchema, type ChatResponse, ChatResponseSchema } from '@pcadvisor/shared';
 import { runChatTurn } from '../chat/orchestrator.js';
+import { toPlainText } from '../chat/plain-text.js';
 import { type LlmClient, LlmUnavailableError } from '../llm/types.js';
 import { type Config } from '../config.js';
 
@@ -47,7 +48,7 @@ export function createChatRouter(deps: { db: DbClient; llm: LlmClient; config: C
       });
 
       const response: ChatResponse = ChatResponseSchema.parse({
-        reply: result.reply,
+        reply: toPlainText(result.reply),
         builds: result.builds && result.builds.length > 0 ? result.builds : undefined,
         recommendationId: result.recommendationId,
         suggestions: result.suggestions,
