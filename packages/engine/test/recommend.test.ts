@@ -294,4 +294,91 @@ describe('recommendation engine', () => {
       expect(req).toEqual(reqCopy); // untouched
     });
   });
+
+  describe('Audience, internalNotes y penalizacion single channel igpu', () => {
+    it('Catálogo chico con un mismo CPU APU y dos RAM (1x8 GB y 2x8 GB) donde ambas entran en el presupuesto: gana la de 2 módulos para gaming sin gpu', () => {
+      const cpuAPU = buildCpu({ hasIgpu: true, igpuScore: 10, socket: 'AM5' });
+      cpuAPU.priceCents = 10000;
+      const mb = buildMotherboard({ socket: 'AM5', memoryType: 'DDR5' });
+      mb.priceCents = 10000;
+      const ram1x8 = buildRam({ memoryType: 'DDR5', totalGb: 8, modules: 1 });
+      ram1x8.componentId = 'ram-1x8';
+      ram1x8.priceCents = 5000;
+      const ram2x8 = buildRam({ memoryType: 'DDR5', totalGb: 16, modules: 2 });
+      ram2x8.componentId = 'ram-2x8';
+      ram2x8.priceCents = 6000;
+      const caseA = buildCase({ supportedFormFactors: ['mATX', 'ATX'] });
+      caseA.specs.includedPsu = { wattage: 500, formFactor: 'ATX', efficiency: '80 Plus' };
+      caseA.priceCents = 5000;
+      const storageA = buildStorage({ interface: 'nvme', capacityGb: 500 });
+      storageA.priceCents = 5000;
+
+      const catalog = [cpuAPU, mb, ram1x8, ram2x8, caseA, storageA] as any[];
+      const res = recommend(
+        { useCases: ['gaming'], budgetMaxCents: 100000, budgetFlexible: false },
+        catalog
+      );
+
+      expect(res.builds.length).toBeGreaterThan(0);
+      const bestBuild = res.builds[res.builds.length - 1];
+      expect(bestBuild.items.find(i => i.type === 'ram')!.componentId).toBe('ram-2x8');
+    });
+
+    it('Un armado con mother con biosNote: el texto va a internalNotes y NO a warnings', () => {
+      const cpu = buildCpu({ hasIgpu: true, igpuScore: 10, socket: 'AM5' });
+      const mb = buildMotherboard({ socket: 'AM5', memoryType: 'DDR5' });
+      mb.specs.biosNote = 'Requires BIOS update';
+      const ram = buildRam({ memoryType: 'DDR5', totalGb: 8, modules: 1 });
+      const caseA = buildCase({ supportedFormFactors: ['mATX', 'ATX'] });
+      caseA.specs.includedPsu = { wattage: 500, formFactor: 'ATX', efficiency: '80 Plus' };
+      const storageA = buildStorage({ interface: 'nvme', capacityGb: 500 });
+
+      const catalog = [cpu, mb, ram, caseA, storageA] as any[];
+      const res = recommend(
+        { useCases: ['office'], budgetMaxCents: 10000000, budgetFlexible: false },
+        catalog
+      );
+
+      const b = res.builds[0];
+      expect(b.warnings.some(w => w.includes('Requires BIOS update'))).toBe(false);
+      expect((b as any).internalNotes.some((w: string) => w.includes('Requires BIOS update'))).toBe(true);
+    });
+
+    it('Gaming sin gpu con 1 módulo: warnings tiene el mensaje específico y no el genérico', () => {
+      const cpu = buildCpu({ hasIgpu: true, igpuScore: 10, socket: 'AM5' });
+      const mb = buildMotherboard({ socket: 'AM5', memoryType: 'DDR5' });
+      const ram1x16 = buildRam({ memoryType: 'DDR5', totalGb: 16, modules: 1 });
+      ram1x16.stock = 1;
+      const caseA = buildCase({ supportedFormFactors: ['mATX', 'ATX'] });
+      caseA.specs.includedPsu = { wattage: 500, formFactor: 'ATX', efficiency: '80 Plus' };
+      const storageA = buildStorage({ interface: 'nvme', capacityGb: 500 });
+
+      const catalog = [cpu, mb, ram1x16, caseA, storageA] as any[];
+      const res = recommend(
+        { useCases: ['gaming'], budgetMaxCents: 10000000, budgetFlexible: false },
+        catalog
+      );
+
+      const b = res.builds[0];
+      expect(b.warnings.some(w => w.includes('rinden bastante menos'))).toBe(true);
+      expect(b.warnings.some(w => w.includes('mejoraría mucho el rendimiento'))).toBe(false);
+    });
+
+    it('Un CPU con igpuScore 7 y 1 módulo sigue siendo elegible para gaming', () => {
+      const cpu = buildCpu({ hasIgpu: true, igpuScore: 7, socket: 'AM5' });
+      const mb = buildMotherboard({ socket: 'AM5', memoryType: 'DDR5' });
+      const ram1x16 = buildRam({ memoryType: 'DDR5', totalGb: 16, modules: 1 });
+      const caseA = buildCase({ supportedFormFactors: ['mATX', 'ATX'] });
+      caseA.specs.includedPsu = { wattage: 500, formFactor: 'ATX', efficiency: '80 Plus' };
+      const storageA = buildStorage({ interface: 'nvme', capacityGb: 500 });
+
+      const catalog = [cpu, mb, ram1x16, caseA, storageA] as any[];
+      const res = recommend(
+        { useCases: ['gaming'], budgetMaxCents: 10000000, budgetFlexible: false },
+        catalog
+      );
+
+      expect(res.builds.length).toBeGreaterThan(0);
+    });
+  });
 });

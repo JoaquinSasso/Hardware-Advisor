@@ -207,6 +207,7 @@ export const BuildSchema = z.object({
   items: z.array(BuildItemSchema).min(1),
   totalCents: z.number().int().nonnegative(),
   warnings: z.array(z.string()),
+  internalNotes: z.array(z.string()).default([]),
 });
 export type Build = z.infer<typeof BuildSchema>;
 

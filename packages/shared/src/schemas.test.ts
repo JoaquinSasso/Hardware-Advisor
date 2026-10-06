@@ -176,7 +176,7 @@ describe('Contracts & Schemas (@pcadvisor/shared)', () => {
     },
   };
 
-  const makeBuild = (id: string): Build => ({
+  const makeBuild = (id: string): any => ({
     id,
     tier: 'budget',
     items: [
@@ -369,10 +369,18 @@ describe('Contracts & Schemas (@pcadvisor/shared)', () => {
   });
 
   // Pruebas adicionales de contratos restantes
-  it('validates Build and EventRequest', () => {
-    const build = makeBuild('build-1');
-    expect(BuildSchema.parse(build)).toEqual(build);
+  it('un Build sin internalNotes queda con []', () => {
+    const buildWithoutInternalNotes = makeBuild('build-1');
+    const parsedBuild = BuildSchema.parse(buildWithoutInternalNotes);
+    expect(parsedBuild.internalNotes).toEqual([]);
+  });
 
+  it('un Build con internalNotes valida', () => {
+    const buildWithInternalNotes = { ...makeBuild('build-2'), internalNotes: ['some note'] };
+    expect(BuildSchema.parse(buildWithInternalNotes).internalNotes).toEqual(['some note']);
+  });
+
+  it('validates Violation and EventRequest', () => {
     const violation = {
       code: 'CPU_MB_SOCKET' as const,
       message: 'Socket mismatch between CPU and Motherboard',

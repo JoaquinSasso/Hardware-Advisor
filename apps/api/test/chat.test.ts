@@ -24,7 +24,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
   });
 
   it('1. advisor: config de la tienda demo; tienda inexistente 404', async () => {
-    const app = createApp({ db, llm: new FakeLlmClient([]), config });
+    const app = createApp({ db, llm: new FakeLlmClient([]), config, logger: () => {} });
     const res = await app.request('/v1/stores/900000001/advisor');
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -36,7 +36,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
 
   it('2. chat solo texto', async () => {
     const fakeLlm = new FakeLlmClient([{ kind: 'text', text: 'Hola, soy el asesor' }]);
-    const app = createApp({ db, llm: fakeLlm, config });
+    const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
 
     const reqBody = { storeId: '900000001', sessionId: '00000000-0000-0000-0000-000000000000', message: 'Hola' };
     const res = await app.request('/v1/chat', {
@@ -65,7 +65,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
       { kind: 'tool_call', name: 'recommend_builds', args: { useCases: ['gaming'], budgetMaxArs: 1300000, budgetFlexible: false, gamingDemand: 'light' }, providerData: null },
       { kind: 'text', text: 'Aquí tenés tu recomendación' }
     ]);
-    const app = createApp({ db, llm: fakeLlm, config });
+    const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
 
     const reqBody = { storeId: '900000001', sessionId: '00000000-0000-0000-0000-000000000001', message: 'Quiero jugar lol' };
     const res = await app.request('/v1/chat', {
@@ -102,7 +102,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
       { kind: 'tool_call', name: 'recommend_builds', args: { useCases: ['gaming'], budgetMaxArs: -10, budgetFlexible: false }, providerData: null },
       { kind: 'text', text: 'Corregí los datos' }
     ]);
-    const app = createApp({ db, llm: fakeLlm, config });
+    const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
 
     const reqBody = { storeId: '900000001', sessionId: '00000000-0000-0000-0000-000000000002', message: 'hola' };
     await app.request('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBody) });
@@ -118,7 +118,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
       { kind: 'tool_call', name: 'recommend_builds', args: { useCases: ['gaming'], budgetMaxArs: 10, budgetFlexible: false }, providerData: null },
       { kind: 'text', text: 'Presupuesto insuficiente' }
     ]);
-    const app = createApp({ db, llm: fakeLlm, config });
+    const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
 
     const reqBody = { storeId: '900000001', sessionId: '00000000-0000-0000-0000-000000000003', message: 'hola' };
     const res = await app.request('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBody) });
@@ -138,7 +138,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
       { kind: 'tool_call', name: 'recommend_builds', args: { useCases: ['gaming'], budgetMaxArs: 1000000, budgetFlexible: false }, providerData: null },
       { kind: 'tool_call', name: 'recommend_builds', args: { useCases: ['gaming'], budgetMaxArs: 1000000, budgetFlexible: false }, providerData: null },
     ]);
-    const app = createApp({ db, llm: fakeLlm, config });
+    const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
 
     const reqBody = { storeId: '900000001', sessionId: '00000000-0000-0000-0000-000000000004', message: 'hola' };
     const res = await app.request('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBody) });
@@ -154,7 +154,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
       { kind: 'text', text: 'Respuesta 1' },
       { kind: 'text', text: 'Respuesta 2' }
     ]);
-    const app = createApp({ db, llm: fakeLlm, config });
+    const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
 
     const sessionId = '00000000-0000-0000-0000-000000000005';
     await app.request('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ storeId: '900000001', sessionId, message: 'm1' }) });
@@ -169,7 +169,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
   it('8. LLM caído: 503 y no se persistió', async () => {
     config.MAX_USER_MESSAGES = 10;
     const fakeLlm = new FakeLlmClient([], 0); // throw on 1st call
-    const app = createApp({ db, llm: fakeLlm, config });
+    const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
 
     const sessionId = '00000000-0000-0000-0000-000000000006';
     const res = await app.request('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ storeId: '900000001', sessionId, message: 'hola' }) });
@@ -189,7 +189,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
       { kind: 'text', text: 'R2' },
       { kind: 'text', text: 'R3' }
     ]);
-    const app = createApp({ db, llm: fakeLlm, config });
+    const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
     const sessionId = '00000000-0000-0000-0000-000000000007';
 
     await app.request('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ storeId: '900000001', sessionId, message: 'm1' }) });
@@ -201,7 +201,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
 
   it('10. validación body inválido y store inexistente', async () => {
     const fakeLlm = new FakeLlmClient([]);
-    const app = createApp({ db, llm: fakeLlm, config });
+    const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
 
     const resBody = await app.request('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"bad":"json' });
     expect(resBody.status).toBe(400);
@@ -215,7 +215,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
       { kind: 'tool_call', name: 'recommend_builds', args: { useCases: ['gaming'], budgetMaxArs: 1300000, budgetFlexible: false, gamingDemand: 'light' }, providerData: null },
       { kind: 'text', text: 'Aquí tenés tu recomendación' }
     ]);
-    const app = createApp({ db, llm: fakeLlm, config });
+    const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
     
     // Create recommendation
     const chatRes = await app.request('/v1/chat', {
@@ -256,7 +256,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
       { kind: 'tool_call', name: 'recommend_builds', args: { useCases: ['gaming'], budgetMaxArs: 1300000, budgetFlexible: false, gamingDemand: 'light' }, providerData: null },
       { kind: 'text', text: 'Ok, acá va.' }
     ]);
-    const app = createApp({ db, llm: fakeLlm, config });
+    const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
 
     const getCatalogSpy = vi.spyOn(dbLib, 'getCatalog');
 
@@ -275,7 +275,7 @@ describe('chat.ts / advisor.ts / events.ts', () => {
 
   it('storeId "12abc" -> 400', async () => {
     const fakeLlm = new FakeLlmClient([]);
-    const app = createApp({ db, llm: fakeLlm, config });
+    const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
 
     const reqBody = { storeId: '12abc', sessionId: '00000000-0000-0000-0000-000000000013', message: 'hola' };
     const res = await app.request('/v1/chat', {

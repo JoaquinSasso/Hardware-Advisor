@@ -1,11 +1,9 @@
 import { createDb, getOrCreateConversation } from '@pcadvisor/db';
 import { GeminiClient } from '../src/llm/gemini.js';
-import { config } from '../src/config.js';
+import { config, dbOptions } from '../src/config.js';
 import { runChatTurn } from '../src/chat/orchestrator.js';
 import { formatArs } from '../src/format.js';
 import { randomUUID } from 'crypto';
-import fs from "node:fs";
-import path from "node:path";
 
 async function main() {
   if (!config.GEMINI_API_KEY) {
@@ -15,24 +13,18 @@ async function main() {
     throw new Error('GEMINI_MODEL is required for smoke test');
   }
 
-const dir = path.resolve(process.env.PGLITE_DIR ?? "../../packages/db/.pglite");
-if (!fs.existsSync(dir)) {
-	throw new Error(
-		`No existe la base PGlite en ${dir}. Cargá el demo con los comandos de packages/db.`,
-	);
-}
-console.log(`PGlite: ${dir}`);
+  const opts = dbOptions(config);
+  const db = createDb(opts as any);
 
-const db = createDb(
-	process.env.DATABASE_URL
-		? { url: process.env.DATABASE_URL }
-		: {
-				pglite: true,
-				dataDir: process.env.PGLITE_DIR ?? "../../packages/db/.pglite",
-			},
-);
+  if ('url' in opts) {
+    const parsed = new URL(opts.url);
+    console.log(`Database host: ${parsed.host}`);
+  } else {
+    console.log(`Database path: ${opts.dataDir}`);
+  }
 
-  const llm = new GeminiClient(config.GEMINI_API_KEY, config.GEMINI_MODEL);
+  const logger = (entry: Record<string, unknown>) => console.log(JSON.stringify(entry));
+  const llm = new GeminiClient(config.GEMINI_API_KEY, config.GEMINI_MODEL, logger);
   const storeId = 900000001;
   const sessionId = randomUUID();
 

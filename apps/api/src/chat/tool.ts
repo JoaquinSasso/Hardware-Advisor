@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { UseCaseSchema, type Requirements, type Build, type CatalogItem, RequirementsSchema } from '@pcadvisor/shared';
-import { formatArs } from '../format.js';
+import { UseCaseSchema, type Requirements, type Build, type CatalogItem, RequirementsSchema, formatArs } from '@pcadvisor/shared';
 import { type ToolSpec } from '../llm/types.js';
 
 export const RecommendToolArgsSchema = z.object({

@@ -1,10 +1,12 @@
 import { serve } from '@hono/node-server';
 import { createDb } from '@pcadvisor/db';
-import { config } from './config.js';
+import { config, dbOptions } from './config.js';
 import { createApp } from './app.js';
 import { GeminiClient } from './llm/gemini.js';
 
 async function main() {
+  const logger = (entry: Record<string, unknown>) => console.log(JSON.stringify(entry));
+
   if (!config.GEMINI_API_KEY) {
     throw new Error('GEMINI_API_KEY is required in server.ts');
   }
@@ -12,16 +14,21 @@ async function main() {
     throw new Error('GEMINI_MODEL is required in server.ts');
   }
 
-  const dbOpts = config.DATABASE_URL
-    ? { url: config.DATABASE_URL }
-    : { pglite: true, dataDir: config.PGLITE_DIR };
-  const db = createDb(dbOpts as any);
+  const opts = dbOptions(config);
+  const db = createDb(opts as any);
 
-  const llm = new GeminiClient(config.GEMINI_API_KEY, config.GEMINI_MODEL);
+  if ('url' in opts) {
+    const parsed = new URL(opts.url);
+    logger({ level: 'info', msg: 'Database configured', host: parsed.host });
+  } else {
+    logger({ level: 'info', msg: 'Database configured', path: opts.dataDir });
+  }
 
-  const app = createApp({ db, llm, config });
+  const llm = new GeminiClient(config.GEMINI_API_KEY, config.GEMINI_MODEL, logger);
 
-  console.log(`Server starting on port ${config.PORT}...`);
+  const app = createApp({ db, llm, config, logger });
+
+  logger({ level: 'info', msg: 'Server starting', port: config.PORT });
   serve({
     fetch: app.fetch,
     port: config.PORT,
@@ -29,6 +36,7 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error('Failed to start server:', err);
+  const logger = (entry: Record<string, unknown>) => console.log(JSON.stringify(entry));
+  logger({ level: 'fatal', msg: 'Failed to start server', error: String(err) });
   process.exit(1);
 });

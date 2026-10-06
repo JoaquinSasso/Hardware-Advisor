@@ -5,7 +5,7 @@ import { runChatTurn } from '../chat/orchestrator.js';
 import { type LlmClient, LlmUnavailableError } from '../llm/types.js';
 import { type Config } from '../config.js';
 
-export function createChatRouter(deps: { db: DbClient; llm: LlmClient; config: Config }) {
+export function createChatRouter(deps: { db: DbClient; llm: LlmClient; config: Config; logger: (entry: Record<string, unknown>) => void }) {
   const router = new Hono();
 
   router.post('/', async (c) => {
@@ -60,9 +60,14 @@ export function createChatRouter(deps: { db: DbClient; llm: LlmClient; config: C
         return c.json({ error: 'store_not_found' }, 404);
       }
       if (err instanceof LlmUnavailableError) {
+        deps.logger({
+          level: 'warn', msg: 'llm_unavailable', cause: err.message,
+          upstream: err.cause instanceof Error ? err.cause.message : String(err.cause ?? ''),
+        });
         return c.json({ error: 'llm_unavailable' }, 503);
       }
-      console.error(err);
+      deps.logger({ level: 'error', msg: 'chat_failed', error: String(err),
+                    stack: err instanceof Error ? err.stack : undefined });
       return c.json({ error: 'internal' }, 500);
     }
   });

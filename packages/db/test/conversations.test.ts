@@ -306,6 +306,7 @@ describe('Conversations and Recommendations Repository (@pcadvisor/db)', () => {
         ],
         totalCents: 35000000,
         warnings: ['BIOS_UPDATE_MAY_BE_REQUIRED'],
+        internalNotes: [],
       },
     ];
 
@@ -377,6 +378,7 @@ describe('Conversations and Recommendations Repository (@pcadvisor/db)', () => {
           ],
           totalCents: 10000000,
           warnings: [],
+          internalNotes: [],
         },
       ],
       cheapestValidTotalCents: null,
@@ -453,6 +455,7 @@ describe('Conversations and Recommendations Repository (@pcadvisor/db)', () => {
           ],
           totalCents: 10000000,
           warnings: [],
+          internalNotes: [],
         },
       ],
       cheapestValidTotalCents: null,

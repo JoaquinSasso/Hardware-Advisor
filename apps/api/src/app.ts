@@ -8,7 +8,7 @@ import { createAdvisorRouter } from './routes/advisor.js';
 import { createChatRouter } from './routes/chat.js';
 import { createEventsRouter } from './routes/events.js';
 
-export function createApp(deps: { db: DbClient; llm: LlmClient; config: Config }) {
+export function createApp(deps: { db: DbClient; llm: LlmClient; config: Config; logger: (entry: Record<string, unknown>) => void }) {
   const app = new Hono();
 
   // Logger Middleware
@@ -16,12 +16,12 @@ export function createApp(deps: { db: DbClient; llm: LlmClient; config: Config }
     const start = Date.now();
     await next();
     const ms = Date.now() - start;
-    console.log(JSON.stringify({
+    deps.logger({
       method: c.req.method,
       path: c.req.path,
       status: c.res.status,
       latencyMs: ms,
-    }));
+    });
   });
 
   // CORS
@@ -39,7 +39,7 @@ export function createApp(deps: { db: DbClient; llm: LlmClient; config: Config }
 
   // Routes
   app.route('/v1/stores', createAdvisorRouter({ db: deps.db }));
-  app.route('/v1/chat', createChatRouter({ db: deps.db, llm: deps.llm, config: deps.config }));
+  app.route('/v1/chat', createChatRouter({ db: deps.db, llm: deps.llm, config: deps.config, logger: deps.logger }));
   app.route('/v1/recommendations', createEventsRouter({ db: deps.db }));
 
   return app;

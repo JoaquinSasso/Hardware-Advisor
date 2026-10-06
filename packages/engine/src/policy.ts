@@ -13,3 +13,5 @@ export function getGpuBrand(gpu: GpuItem): 'nvidia' | 'amd' | null {
 export function isCertifiedPsu(efficiency: string): boolean {
   return efficiency.startsWith('80 Plus');
 }
+import type { WarningCode } from '@pcadvisor/shared';
+export const WARNING_AUDIENCE: Record<WarningCode, 'customer' | 'internal'> = { BIOS_UPDATE_MAY_BE_REQUIRED: 'internal', SINGLE_CHANNEL_MEMORY: 'customer' };

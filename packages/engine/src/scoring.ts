@@ -4,9 +4,14 @@ export function getCpuScore(cpu: CpuItem): number {
   return cpu.specs.perfScore;
 }
 
-export function getGpuScore(cpu: CpuItem, gpu: GpuItem | null): number {
+export const SINGLE_CHANNEL_IGPU_FACTOR_PERCENT = 60;
+
+export function getGpuScore(cpu: CpuItem, gpu: GpuItem | null, totalRamModules: number): number {
   if (gpu) {
     return gpu.specs.perfScore;
+  }
+  if (totalRamModules === 1) {
+    return Math.floor((cpu.specs.igpuScore * SINGLE_CHANNEL_IGPU_FACTOR_PERCENT) / 100);
   }
   return cpu.specs.igpuScore;
 }
@@ -47,7 +52,8 @@ export function calculateBuildScore(
   weights: { cpu: number; gpu: number; ram: number; storage: number }
 ): number {
   const cScore = getCpuScore(cpuItem);
-  const gScore = getGpuScore(cpuItem, gpuItem);
+  const totalRamModules = ramItem.specs.modules * ramQty;
+  const gScore = getGpuScore(cpuItem, gpuItem, totalRamModules);
   const rScore = getRamScore(ramItem, ramQty);
   const sScore = getStorageScore(storageItem);
 

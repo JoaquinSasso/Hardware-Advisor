@@ -67,6 +67,10 @@ describe('recommendation property tests', () => {
             expect(ids.has(build.id)).toBe(false);
             ids.add(build.id);
 
+            for (const note of (build as any).internalNotes || []) {
+              expect(build.warnings).not.toContain(note);
+            }
+
             let calculatedTotal = 0;
             const parts: Part[] = [];
             

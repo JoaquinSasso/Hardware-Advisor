@@ -9,7 +9,7 @@ import { checkCompatibility } from './compatibility.js';
 import { requiredPsuW } from './power.js';
 import { resolveProfile, MIN_GAMING_IGPU_SCORE } from './profiles.js';
 import { calculateBuildScore } from './scoring.js';
-import { getCpuBrand, getGpuBrand, isCertifiedPsu } from './policy.js';
+import { getCpuBrand, getGpuBrand, isCertifiedPsu, WARNING_AUDIENCE } from './policy.js';
 import type { CpuItem, MotherboardItem, RamItem, GpuItem, StorageItem, CaseItem, PsuItem, Part } from './types.js';
 
 export type RecommendResult = {
@@ -255,9 +255,27 @@ export function recommend(req: Requirements, catalog: CatalogItem[]): RecommendR
     }));
 
     const comp = checkCompatibility(parts);
-    const warnings = comp.warnings.map(w => w.message);
+    const warnings: string[] = [];
+    const internalNotes: string[] = [];
+
+    const totalRamModules = cand.ram.specs.modules * cand.ramQty;
+    const isSingleChannelIgpu = isGaming && !cand.gpu && totalRamModules === 1;
+
+    for (const w of comp.warnings) {
+      const audience = WARNING_AUDIENCE[w.code];
+      if (audience === 'internal') {
+        internalNotes.push(w.message);
+      } else {
+        if (w.code === 'SINGLE_CHANNEL_MEMORY' && isSingleChannelIgpu) {
+          warnings.push('Con un solo módulo de memoria, los gráficos integrados rinden bastante menos: conviene sumar un segundo módulo igual.');
+        } else {
+          warnings.push(w.message);
+        }
+      }
+    }
+
     if (isGaming && !cand.gpu) {
-      warnings.push("Usa los gráficos integrados del procesador: alcanza para juegos livianos como CS2, LoL o Valorant en calidad baja o media, no para juegos exigentes.");
+      warnings.push('Usa los gráficos integrados del procesador: alcanza para juegos livianos como CS2, LoL o Valorant en calidad baja o media, no para juegos exigentes.');
     }
 
     const build: Build = {
@@ -266,6 +284,7 @@ export function recommend(req: Requirements, catalog: CatalogItem[]): RecommendR
       items: buildItems,
       totalCents: cand.totalCents,
       warnings,
+      internalNotes,
     };
     builds.push(BuildSchema.parse(build));
   }

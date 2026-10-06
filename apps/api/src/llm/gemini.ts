@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type, FunctionDeclaration, Content, Part, GenerateContentResponse } from '@google/genai';
+import { GoogleGenAI, Type, FunctionDeclaration, Content, Part, GenerateContentResponse, ThinkingLevel } from '@google/genai';
 import { type ChatTurn } from '@pcadvisor/shared';
 import { LlmUnavailableError, type LlmClient, type LlmOutput, type ToolSpec } from './types.js';
 
@@ -46,13 +46,15 @@ export function toGeminiContents(history: ChatTurn[]): Content[] {
   });
 }
 
-export function fromGeminiResponse(response: GenerateContentResponse): LlmOutput {
+export function fromGeminiResponse(response: GenerateContentResponse, logger?: (entry: Record<string, unknown>) => void): LlmOutput {
   const parts = response.candidates?.[0]?.content?.parts || [];
   const functionCallParts = parts.filter((p: any) => p.functionCall);
   
   if (functionCallParts.length > 0) {
     if (functionCallParts.length > 1) {
-      console.warn('Multiple function calls returned, using the first one');
+      if (logger) {
+        logger({ level: 'warn', message: 'Multiple function calls returned, using the first one' });
+      }
     }
     const fcPart = functionCallParts[0];
     if (!fcPart || !fcPart.functionCall) throw new Error('functionCall missing');
@@ -69,7 +71,8 @@ export function fromGeminiResponse(response: GenerateContentResponse): LlmOutput
   const fullText = textParts.map((p: any) => p.text).join('').trim();
   
   if (!fullText) {
-    throw new LlmUnavailableError('empty response');
+    const finish = response.candidates?.[0]?.finishReason ?? 'unknown';
+    throw new LlmUnavailableError(`empty response (finishReason=${finish})`);
   }
 
   return { kind: 'text', text: fullText };
@@ -78,7 +81,7 @@ export function fromGeminiResponse(response: GenerateContentResponse): LlmOutput
 export class GeminiClient implements LlmClient {
   private ai: GoogleGenAI;
   
-  constructor(apiKey: string, private readonly modelName: string) {
+  constructor(apiKey: string, private readonly modelName: string, private readonly logger?: (entry: Record<string, unknown>) => void) {
     this.ai = new GoogleGenAI({ apiKey });
   }
 
@@ -97,14 +100,20 @@ export class GeminiClient implements LlmClient {
         contents,
         config: {
           systemInstruction: input.system,
-          temperature: 0.3,
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
           tools: [{ functionDeclarations }],
           // SDK timeout (AbortSignal) is passed via config.abortSignal
           abortSignal: AbortSignal.timeout(20000),
         },
       });
 
-      return fromGeminiResponse(response);
+      if (this.logger) {
+        this.logger({
+          level: 'info', msg: 'llm_usage',
+          usage: response.usageMetadata, finish: response.candidates?.[0]?.finishReason
+        });
+      }
+      return fromGeminiResponse(response, this.logger);
     } catch (err: any) {
       if (err.name === 'AbortError' || err.name === 'TimeoutError' || err.status === 429 || (err.status && err.status >= 500)) {
         throw new LlmUnavailableError('LLM temporarily unavailable', err);

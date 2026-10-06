@@ -1,4 +1,21 @@
 import { z } from 'zod';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const preprocessEnv = (env: NodeJS.ProcessEnv) => {
+  const result: Record<string, string | undefined> = {};
+  for (const [key, value] of Object.entries(env)) {
+    if (value !== undefined) {
+      const trimmed = value.trim();
+      if (trimmed === '') {
+        result[key] = undefined;
+      } else {
+        result[key] = trimmed;
+      }
+    }
+  }
+  return result;
+};
 
 const ConfigSchema = z.object({
   PORT: z.coerce.number().int().positive().default(8080),
@@ -10,5 +27,16 @@ const ConfigSchema = z.object({
   MAX_USER_MESSAGES: z.coerce.number().int().positive().default(20),
 });
 
-export const config = ConfigSchema.parse(process.env);
+export const config = ConfigSchema.parse(preprocessEnv(process.env));
 export type Config = z.infer<typeof ConfigSchema>;
+
+export function dbOptions(cfg: Config): { url: string } | { pglite: true; dataDir: string } {
+  if (cfg.DATABASE_URL) {
+    return { url: cfg.DATABASE_URL };
+  }
+  const dataDir = path.resolve(cfg.PGLITE_DIR);
+  if (!fs.existsSync(dataDir)) {
+    throw new Error(`No existe la base PGlite en ${dataDir}`);
+  }
+  return { pglite: true, dataDir };
+}
