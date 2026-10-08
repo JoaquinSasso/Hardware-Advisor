@@ -1,37 +1,37 @@
 {
-  "name": "@pcadvisor/db",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "tsc",
-    "test": "vitest run",
-    "db:migrate": "tsx src/cli.ts db:migrate",
-    "import:csv": "tsx src/cli.ts import:csv",
-    "seed:components": "tsx src/cli.ts seed:components",
-    "apply:mappings": "tsx src/cli.ts apply:mappings",
-    "store:config": "tsx src/cli.ts store:config"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
-  "dependencies": {
-    "@pcadvisor/shared": "workspace:*",
-    "csv-parse": "^5.5.3",
-    "drizzle-orm": "latest",
-    "iconv-lite": "^0.6.3",
-    "postgres": "^3.4.3",
-    "zod": "^3.22.4"
-  },
-  "devDependencies": {
-    "@electric-sql/pglite": "^0.2.7",
-    "@types/node": "^20.11.10",
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
-  },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+	"name": "@pcadvisor/db",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "tsc",
+		"test": "vitest run",
+		"db:migrate": "tsx src/cli.ts db:migrate",
+		"import:csv": "tsx src/cli.ts import:csv",
+		"seed:components": "tsx src/cli.ts seed:components",
+		"apply:mappings": "tsx src/cli.ts apply:mappings",
+		"store:config": "tsx src/cli.ts store:config"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"dependencies": {
+		"@pcadvisor/shared": "workspace:*",
+		"csv-parse": "^5.5.3",
+		"drizzle-orm": "0.45.3",
+		"iconv-lite": "^0.6.3",
+		"postgres": "^3.4.3",
+		"zod": "^3.22.4"
+	},
+	"devDependencies": {
+		"@electric-sql/pglite": "^0.2.7",
+		"@types/node": "^20.11.10",
+		"tsx": "^4.7.0",
+		"typescript": "^5.3.3"
+	},
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts"
 }
