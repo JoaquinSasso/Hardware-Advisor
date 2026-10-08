@@ -5,7 +5,7 @@ import { type LlmClient } from '../llm/types.js';
 import { SYSTEM_PROMPT } from './prompt.js';
 import { toolSpec, RecommendToolArgsSchema, toRequirements, toolResultForLlm, type ToolResult, ToolResultForLlmSchema } from './tool.js';
 import { getSuggestions } from './suggestions.js';
-import { extractAmounts, findMoneyViolations } from './money-guard.js';
+import { findMoneyViolations, collectAllowedAmounts } from './money-guard.js';
 
 export async function runChatTurn(deps: {
   db: DbClient;
@@ -30,28 +30,13 @@ export async function runChatTurn(deps: {
   let lastRecommendationId: string | undefined = undefined;
 
   const processTextReply = (text: string) => {
-    const allowed = new Set<number>();
+    const allowed = collectAllowedAmounts([...history, ...newTurns]);
     let hasBuildsInThisMessage = false;
-    for (const turn of [...history, ...newTurns]) {
-      if (turn.role === 'user') {
-        for (const amt of extractAmounts(turn.text)) allowed.add(amt);
-      } else if (turn.role === 'tool') {
+    for (const turn of newTurns) {
+      if (turn.role === 'tool') {
         const parsed = ToolResultForLlmSchema.safeParse(turn.result);
-        if (!parsed.success) {
-          throw new Error(`Tool turn result failed validation: ${parsed.error.message}`);
-        }
-        const res = parsed.data;
-        if (res.status === 'ok') {
-          for (const b of res.builds) {
-            for (const amt of extractAmounts(b.totalLabel)) allowed.add(amt);
-          }
-          if (newTurns.includes(turn)) {
-            hasBuildsInThisMessage = true;
-          }
-        } else if (res.status === 'no_builds_in_budget') {
-          if (res.minimumBudgetArs !== null) {
-            allowed.add(res.minimumBudgetArs);
-          }
+        if (parsed.success && parsed.data.status === 'ok') {
+          hasBuildsInThisMessage = true;
         }
       }
     }

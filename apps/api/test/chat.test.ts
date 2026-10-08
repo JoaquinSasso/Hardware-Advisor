@@ -252,6 +252,41 @@ describe('chat.ts / advisor.ts / events.ts', () => {
     expect(evRes3.status).toBe(404);
   });
 
+  it('events con id no uuid -> 404', async () => {
+    const app = createApp({ db, llm: new FakeLlmClient([]), config, logger: () => {} });
+    const res = await app.request('/v1/recommendations/not-a-valid-uuid/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'cart_added', buildId: 'basic' }),
+    });
+    expect(res.status).toBe(404);
+    const body = await res.json();
+    expect(body.error).toBe('recommendation_not_found');
+  });
+
+  it('events con error desconocido -> 500 y log error', async () => {
+    const loggerSpy = vi.fn();
+    const app = createApp({ db, llm: new FakeLlmClient([]), config, logger: loggerSpy });
+    const recordEventSpy = vi.spyOn(dbLib, 'recordEvent').mockRejectedValueOnce(new Error('db crash'));
+
+    const res = await app.request('/v1/recommendations/00000000-0000-0000-0000-000000000000/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'cart_added', buildId: 'basic' }),
+    });
+
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.error).toBe('internal');
+    expect(loggerSpy).toHaveBeenCalledWith({
+      level: 'error',
+      msg: 'event_failed',
+      error: 'Error: db crash',
+    });
+
+    recordEventSpy.mockRestore();
+  });
+
   it('getCatalog se llama una sola vez por llamada a la herramienta', async () => {
     const fakeLlm = new FakeLlmClient([
       { kind: 'tool_call', name: 'recommend_builds', args: { useCases: ['gaming'], budgetMaxArs: 1300000, budgetFlexible: false, gamingDemand: 'light' }, providerData: null },

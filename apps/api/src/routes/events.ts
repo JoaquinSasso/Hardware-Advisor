@@ -1,12 +1,17 @@
 import { Hono } from 'hono';
+import { z } from 'zod';
 import { type DbClient, recordEvent, RecommendationNotFoundError, BuildNotInRecommendationError } from '@pcadvisor/db';
 import { EventRequestSchema } from '@pcadvisor/shared';
 
-export function createEventsRouter(deps: { db: DbClient }) {
+export function createEventsRouter(deps: { db: DbClient; logger: (entry: Record<string, unknown>) => void }) {
   const router = new Hono();
 
   router.post('/:id/events', async (c) => {
     const id = c.req.param('id');
+    if (!z.string().uuid().safeParse(id).success) {
+      return c.json({ error: 'recommendation_not_found' }, 404);
+    }
+
     let body;
     try {
       body = await c.req.json();
@@ -33,6 +38,7 @@ export function createEventsRouter(deps: { db: DbClient }) {
       if (err instanceof BuildNotInRecommendationError) {
         return c.json({ error: 'build_not_in_recommendation' }, 400);
       }
+      deps.logger({ level: 'error', msg: 'event_failed', error: String(err) });
       return c.json({ error: 'internal' }, 500);
     }
   });

@@ -40,7 +40,7 @@ export function createApp(deps: { db: DbClient; llm: LlmClient; config: Config; 
   // Routes
   app.route('/v1/stores', createAdvisorRouter({ db: deps.db }));
   app.route('/v1/chat', createChatRouter({ db: deps.db, llm: deps.llm, config: deps.config, logger: deps.logger }));
-  app.route('/v1/recommendations', createEventsRouter({ db: deps.db }));
+  app.route('/v1/recommendations', createEventsRouter({ db: deps.db, logger: deps.logger }));
 
   return app;
 }

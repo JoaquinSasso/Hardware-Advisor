@@ -125,7 +125,9 @@ export class GeminiClient implements LlmClient {
       let usage: GenerateContentResponse['usageMetadata'];
       let isTimeoutErr = false;
 
-      const signal = AbortSignal.timeout(attemptTimeoutMs);
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), attemptTimeoutMs);
+      const signal = controller.signal;
 
       try {
         const response = await this.callModel({
@@ -155,16 +157,18 @@ export class GeminiClient implements LlmClient {
           status = err.status;
         }
         
-        isTimeoutErr = signal.aborted;
-        const isEmptyResponse = err instanceof LlmUnavailableError && err.message.startsWith('empty response');
-        const isRetryableStatus = status === 429 || status === 500 || status === 502 || status === 503 || status === 504;
-        
-        if (isTimeoutErr) {
+        if (signal.aborted) {
           outcome = 'timeout';
-        } else if (isEmptyResponse || isRetryableStatus) {
-          outcome = 'retryable_error';
+          isTimeoutErr = true;
+        } else if (typeof status === 'number') {
+          const isRetryableStatus = status === 429 || status === 500 || status === 502 || status === 503 || status === 504;
+          if (isRetryableStatus) {
+            outcome = 'retryable_error';
+          } else {
+            outcome = 'fatal_error';
+          }
         } else {
-          outcome = 'fatal_error';
+          outcome = 'retryable_error';
         }
 
         if (this.logger) {
@@ -179,6 +183,8 @@ export class GeminiClient implements LlmClient {
           return { kind: 'fatal_error', error: err };
         }
         return { kind: 'retryable_error', error: err, isTimeout: isTimeoutErr, elapsedMs: Date.now() - attemptStartTime };
+      } finally {
+        clearTimeout(timer);
       }
     };
 

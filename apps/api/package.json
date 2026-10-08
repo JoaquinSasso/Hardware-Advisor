@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"type": "module",
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc && tsc -p tsconfig.scripts.json",
 		"test": "vitest run",
 		"smoke": "tsx --env-file=.env scripts/smoke.ts",
 		"dev": "tsx watch --env-file=.env src/server.ts"

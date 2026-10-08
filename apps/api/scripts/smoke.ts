@@ -2,7 +2,7 @@ import { createDb, getOrCreateConversation } from '@pcadvisor/db';
 import { GeminiClient } from '../src/llm/gemini.js';
 import { config, dbOptions } from '../src/config.js';
 import { runChatTurn } from '../src/chat/orchestrator.js';
-import { formatArs } from '../src/format.js';
+import { formatArs } from '@pcadvisor/shared';
 import { randomUUID } from 'crypto';
 
 async function main() {
@@ -14,7 +14,7 @@ async function main() {
   }
 
   const opts = dbOptions(config);
-  const db = createDb(opts as any);
+  const db = createDb(opts);
 
   if ('url' in opts) {
     const parsed = new URL(opts.url);
@@ -39,6 +39,7 @@ async function main() {
     storeId,
     history: [],
     userMessage: 'Quiero jugar Valorant y LoL, tengo 1300000 pesos',
+    logger,
   });
 
   console.log('\n--- LLM REPLY ---');

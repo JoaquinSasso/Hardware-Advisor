@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { extractAmounts, findMoneyViolations } from '../src/chat/money-guard.js';
+import { extractAmounts, findMoneyViolations, collectAllowedAmounts } from '../src/chat/money-guard.js';
+import { type ChatTurn } from '@pcadvisor/shared';
 
 describe('money-guard.ts', () => {
   describe('extractAmounts', () => {
@@ -41,6 +42,24 @@ describe('money-guard.ts', () => {
     it('monto inventado -> [monto]', () => {
       const allowed = new Set([1500000]);
       expect(findMoneyViolations('El precio es $ 1.916.710', allowed)).toEqual([1916710]);
+    });
+  });
+
+  describe('collectAllowedAmounts', () => {
+    it('turno tool no_builds_in_budget con minimumBudgetArs: 1165232, minimumBudgetLabel: "$ 1.165.231" -> el set contiene 1165231 y 1165232; y findMoneyViolations("arranca en $ 1.165.231", set) -> []', () => {
+      const toolTurn: ChatTurn = {
+        role: 'tool',
+        name: 'recommend_builds',
+        result: {
+          status: 'no_builds_in_budget',
+          minimumBudgetArs: 1165232,
+          minimumBudgetLabel: '$ 1.165.231',
+        },
+      };
+      const set = collectAllowedAmounts([toolTurn]);
+      expect(set.has(1165231)).toBe(true);
+      expect(set.has(1165232)).toBe(true);
+      expect(findMoneyViolations('arranca en $ 1.165.231', set)).toEqual([]);
     });
   });
 });
