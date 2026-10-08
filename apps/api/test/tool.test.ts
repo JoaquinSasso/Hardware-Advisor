@@ -53,7 +53,11 @@ describe('tool.ts', () => {
         ]
       }]
     }, catalog);
-    expect((result as any).builds[0].warnings).toEqual(['customer warning']);
-    expect((result as any).builds[0].internalNotes).toBeUndefined();
+    const resBuild = (result as any).builds[0];
+    expect(resBuild.warnings).toEqual(['customer warning']);
+    expect(resBuild.internalNotes).toBeUndefined();
+    expect(resBuild.priceCents).toBeUndefined();
+    expect(resBuild.totalCents).toBeUndefined();
+    expect(resBuild.totalLabel).toBe('$ 1');
   });
 });

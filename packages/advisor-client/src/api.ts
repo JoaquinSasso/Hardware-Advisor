@@ -77,8 +77,7 @@ export function createAdvisorClient(opts: {
         const res = await doFetch(`${baseUrl}/v1/recommendations/${recommendationId}/events`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'X-Store-ID': storeId,
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({ type, buildId }),
         });

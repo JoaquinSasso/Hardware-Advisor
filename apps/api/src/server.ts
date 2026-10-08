@@ -24,7 +24,7 @@ async function main() {
     logger({ level: 'info', msg: 'Database configured', path: opts.dataDir });
   }
 
-  const llm = new GeminiClient(config.GEMINI_API_KEY, config.GEMINI_MODEL, logger);
+  const llm = new GeminiClient(config.GEMINI_API_KEY, config.GEMINI_MODEL, config.GEMINI_FALLBACK_MODEL, logger);
 
   const app = createApp({ db, llm, config, logger });
 

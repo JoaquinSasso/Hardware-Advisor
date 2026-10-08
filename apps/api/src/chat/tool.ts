@@ -79,10 +79,39 @@ export type ToolResult =
   | { status: 'no_builds_in_budget'; cheapestValidTotalCents: number | null }
   | { status: 'invalid_args'; issues: string[] };
 
+export const ToolResultBuildSchema = z.object({
+  tier: z.enum(['budget', 'balanced', 'performance']),
+  totalLabel: z.string(),
+  cpu: z.string(),
+  gpu: z.string().nullable(),
+  ramGb: z.number().int().nonnegative(),
+  storageGb: z.number().int().nonnegative(),
+  storageType: z.enum(['sata', 'nvme']),
+  warnings: z.array(z.string()),
+});
+export type ToolResultBuild = z.infer<typeof ToolResultBuildSchema>;
+
+export const ToolResultForLlmSchema = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('ok'),
+    builds: z.array(ToolResultBuildSchema),
+  }),
+  z.object({
+    status: z.literal('no_builds_in_budget'),
+    minimumBudgetArs: z.number().int().nullable(),
+    minimumBudgetLabel: z.string().nullable(),
+  }),
+  z.object({
+    status: z.literal('invalid_args'),
+    issues: z.array(z.string()),
+  }),
+]);
+export type ToolResultForLlm = z.infer<typeof ToolResultForLlmSchema>;
+
 export function toolResultForLlm(
   result: ToolResult,
   catalog: CatalogItem[]
-) {
+): ToolResultForLlm {
   if (result.status === 'ok') {
     const catalogMap = new Map<string, CatalogItem>();
     for (const item of catalog) {
@@ -124,6 +153,7 @@ export function toolResultForLlm(
 
         return {
           tier: b.tier,
+          totalLabel: formatArs(b.totalCents),
           cpu,
           gpu,
           ramGb,
@@ -137,6 +167,7 @@ export function toolResultForLlm(
   if (result.status === 'no_builds_in_budget') {
     return {
       status: 'no_builds_in_budget',
+      minimumBudgetArs: result.cheapestValidTotalCents !== null ? Math.ceil(result.cheapestValidTotalCents / 100) : null,
       minimumBudgetLabel: result.cheapestValidTotalCents !== null ? formatArs(result.cheapestValidTotalCents) : null,
     };
   }

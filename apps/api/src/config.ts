@@ -23,6 +23,7 @@ const ConfigSchema = z.object({
   PGLITE_DIR: z.string().default('../../packages/db/.pglite'),
   GEMINI_API_KEY: z.string().optional(),
   GEMINI_MODEL: z.string().optional(),
+  GEMINI_FALLBACK_MODEL: z.string().optional(),
   ALLOWED_ORIGINS: z.string().transform((val) => val.split(',').map(s => s.trim()).filter(Boolean)).default('*'),
   MAX_USER_MESSAGES: z.coerce.number().int().positive().default(20),
 });

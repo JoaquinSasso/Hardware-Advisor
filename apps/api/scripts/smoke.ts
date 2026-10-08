@@ -24,7 +24,7 @@ async function main() {
   }
 
   const logger = (entry: Record<string, unknown>) => console.log(JSON.stringify(entry));
-  const llm = new GeminiClient(config.GEMINI_API_KEY, config.GEMINI_MODEL, logger);
+  const llm = new GeminiClient(config.GEMINI_API_KEY, config.GEMINI_MODEL, config.GEMINI_FALLBACK_MODEL, logger);
   const storeId = 900000001;
   const sessionId = randomUUID();
 

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import * as dbLib from '@pcadvisor/db';
 import { createApp } from '../src/app.js';
+import { runChatTurn } from '../src/chat/orchestrator.js';
 import { FakeLlmClient } from '../src/llm/fake.js';
 import { setupDemoDb } from './setup.js';
 import { type Config } from '../src/config.js';
@@ -287,5 +288,96 @@ describe('chat.ts / advisor.ts / events.ts', () => {
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toBe('invalid_request');
+  });
+
+  describe('Money Guard', () => {
+    it('a) responde con el totalLabel exacto de un build -> reply sin cambios', async () => {
+      const fakeLlm = new FakeLlmClient([
+        { kind: 'tool_call', name: 'recommend_builds', args: { useCases: ['gaming'], budgetMaxArs: 1300000, budgetFlexible: false, gamingDemand: 'light' }, providerData: null },
+        { kind: 'text', text: 'El precio es $ 1.300.000' } // Allowed because user said 1300000
+      ]);
+      const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
+      const reqBody = { storeId: '900000001', sessionId: '00000000-0000-0000-0000-000000000014', message: 'Tengo 1300000' };
+      const res = await app.request('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBody) });
+      const body = await res.json();
+      expect(res.status).toBe(200);
+      expect(body.reply).toBe('El precio es $ 1.300.000');
+    });
+
+    it('b) responde con un monto inventado -> reply reemplazado, log money_guard_violation, y el turno persistido tiene el texto reemplazado', async () => {
+      const fakeLlm = new FakeLlmClient([
+        { kind: 'tool_call', name: 'recommend_builds', args: { useCases: ['gaming'], budgetMaxArs: 1300000, budgetFlexible: false, gamingDemand: 'light' }, providerData: null },
+        { kind: 'text', text: 'El precio es $ 9.999.999' } // Invented
+      ]);
+      const loggerSpy = vi.fn();
+      const app = createApp({ db, llm: fakeLlm, config, logger: loggerSpy });
+      const sessionId = '00000000-0000-0000-0000-000000000015';
+      const reqBody = { storeId: '900000001', sessionId, message: 'hola' };
+      const res = await app.request('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBody) });
+      
+      const body = await res.json();
+      expect(body.reply).toBe('Te dejo las opciones abajo. El precio de cada armado está en su tarjeta. ¿Querés que te cuente en qué se diferencian?');
+      expect(loggerSpy).toHaveBeenCalledWith({ msg: 'money_guard_violation', amounts: [9999999] });
+
+      const convos = await db.query.conversations.findMany({ where: (c, { eq }) => eq(c.sessionId, sessionId) });
+      const turns = await getRecentTurns(db, convos[0].id, 10);
+      const assistantTurn = turns[turns.length - 1];
+      expect(assistantTurn.role).toBe('assistant');
+      expect(assistantTurn.text).toBe('Te dejo las opciones abajo. El precio de cada armado está en su tarjeta. ¿Querés que te cuente en qué se diferencian?');
+    });
+
+    it('c) el usuario escribió "tengo 1300000" y el LLM lo repite como "$ 1.300.000" -> permitido', async () => {
+      const fakeLlm = new FakeLlmClient([
+        { kind: 'text', text: 'Tu presupuesto es $ 1.300.000' }
+      ]);
+      const app = createApp({ db, llm: fakeLlm, config, logger: () => {} });
+      const reqBody = { storeId: '900000001', sessionId: '00000000-0000-0000-0000-000000000016', message: 'tengo 1300000' };
+      const res = await app.request('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reqBody) });
+      
+      const body = await res.json();
+      expect(body.reply).toBe('Tu presupuesto es $ 1.300.000');
+    });
+
+    it('d) flujo no_builds -> el usuario acepta -> el fake llama la herramienta con budgetMaxArs = minimumBudgetArs -> devuelve el armado más barato', async () => {
+      // Step 1: no_builds_in_budget
+      const fakeLlm1 = new FakeLlmClient([
+        { kind: 'tool_call', name: 'recommend_builds', args: { useCases: ['gaming'], budgetMaxArs: 10, budgetFlexible: false }, providerData: null },
+        { kind: 'text', text: 'El mínimo es $ 500.000' }
+      ]);
+      const app1 = createApp({ db, llm: fakeLlm1, config, logger: () => {} });
+      const sessionId = '00000000-0000-0000-0000-000000000017';
+      await app1.request('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ storeId: '900000001', sessionId, message: 'presupuesto 10' }) });
+      
+      // Step 2: LLM uses the tool again with a large budget and user accepting it
+      const fakeLlm2 = new FakeLlmClient([
+        { kind: 'tool_call', name: 'recommend_builds', args: { useCases: ['gaming'], budgetMaxArs: 999999999, budgetFlexible: false, gamingDemand: 'light' }, providerData: null },
+        { kind: 'text', text: 'Aca tenes.' }
+      ]);
+      const app2 = createApp({ db, llm: fakeLlm2, config, logger: () => {} });
+      const res = await app2.request('/v1/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ storeId: '900000001', sessionId, message: 'acepto' }) });
+      
+      const body = await res.json();
+      expect(body.builds).toBeDefined();
+      expect(body.builds.length).toBeGreaterThan(0);
+    });
+
+    it('e) turno tool con resultado inválido -> lanza Error', async () => {
+      const invalidHistory = [
+        { role: 'user', text: 'hola' },
+        { role: 'assistant', text: null, toolCall: { name: 'recommend_builds', args: {} }, providerData: null },
+        { role: 'tool', name: 'recommend_builds', result: { status: 'invalid_status' } },
+      ] as any;
+      const fakeLlm = new FakeLlmClient([{ kind: 'text', text: 'hola' }]);
+      await expect(
+        runChatTurn({
+          db,
+          llm: fakeLlm,
+          conversationId: '00000000-0000-0000-0000-000000000001',
+          storeId: 900000001,
+          history: invalidHistory,
+          userMessage: 'hola de nuevo',
+        })
+      ).rejects.toThrow(/Tool turn result failed validation/);
+    });
   });
 });

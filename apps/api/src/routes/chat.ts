@@ -45,6 +45,7 @@ export function createChatRouter(deps: { db: DbClient; llm: LlmClient; config: C
         storeId,
         history,
         userMessage: reqData.message,
+        logger: deps.logger,
       });
 
       const response: ChatResponse = ChatResponseSchema.parse({
