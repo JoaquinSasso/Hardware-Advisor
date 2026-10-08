@@ -33,11 +33,11 @@ La idea central del diseño es **separar lo que hace bien un LLM de lo que tiene
 ## Lo técnicamente interesante
 
 - **Motor de compatibilidad y recomendación puro.** Enumeración exhaustiva con poda sobre el catálogo, perfiles de uso con pesos, tres niveles de armado (lo que obtenés gastando 70 %, 85 % y 100 % del presupuesto) y reglas como "si el armado tiene placa de video, la fuente tiene que estar certificada". Probado con tests de propiedades (`fast-check`): cientos de pedidos aleatorios en los que cada armado devuelto tiene que ser compatible, entrar en el presupuesto y respetar el stock.
-- **Guardas sobre el LLM.** Un *money guard* extrae los montos de cada respuesta y la reemplaza si aparece uno que no corresponde a ningún armado real. Lo agregamos después de ver al modelo inventar precios en una prueba real ([ver por qué](docs/lecciones.md)).
+- **Guardas sobre el LLM.** Un *money guard* extrae los montos de cada respuesta y la reemplaza si aparece uno que no corresponde a ningún armado real. Lo agregamos después de ver al modelo inventar precios en una prueba real.
 - **Resiliencia ante un proveedor inestable.** Reintentos solo ante fallas rápidas, salto directo a un modelo de respaldo ante timeouts y un presupuesto de tiempo total por llamada.
 - **Integridad en la base.** Postgres con restricciones que hacen imposibles ciertos errores: una clave foránea compuesta impide cargar especificaciones de procesador en un componente que es una placa de video, y un CHECK impide habilitar en el asesor un producto sin vincular.
 - **Datos reales desordenados.** El catálogo viene de un export CSV de Tiendanube en windows‑1252, con nombres no estandarizados, SKUs repetidos y productos mal categorizados. El modelo de datos separa el catálogo global de componentes de los productos de cada tienda, lo que deja abierta la puerta a varias tiendas.
-- **Desarrollado dirigiendo agentes de IA.** El diseño, las especificaciones y las revisiones son míos (con asistencia de Claude como arquitecto); la implementación la hicieron agentes de Gemini en Antigravity. El proceso, con sus reglas y sus errores, está documentado en [docs/flujo-con-agentes.md](docs/flujo-con-agentes.md).
+- **Desarrollado dirigiendo agentes de IA.** El diseño, las especificaciones y las revisiones son míos (con asistencia de Claude como arquitecto); la implementación la hicieron agentes de Gemini en Antigravity. El proceso y sus reglas están definidos en [AGENTS.md](AGENTS.md).
 
 ## Stack
 
@@ -52,7 +52,7 @@ packages/engine          Compatibilidad y recomendación (puro, sin IO)
 packages/advisor-client  Lógica del cliente sin DOM, reutilizable en el widget
 apps/api                 API HTTP + orquestación del LLM
 apps/devchat             Página local para probar el chat
-docs/                    Arquitectura, decisiones, LLM, lecciones, desarrollo
+docs/                    Setup local, comandos y desarrollo
 ```
 
 ## Probarlo en local
@@ -77,14 +77,7 @@ pnpm --filter @pcadvisor/devchat dev     # http://localhost:5173
 
 ## Documentación
 
-| Documento | Para qué sirve |
-|---|---|
-| [Arquitectura](docs/arquitectura.md) | Componentes, flujo de un mensaje, modelo de datos |
-| [Decisiones](docs/decisiones.md) | Registro de decisiones de diseño, con alternativas y motivos |
-| [Diseño del LLM](docs/llm.md) | Herramienta, prompt, guardas y resiliencia |
-| [Lecciones](docs/lecciones.md) | Incidentes reales, cómo se diagnosticaron y qué cambió |
-| [Flujo con agentes](docs/flujo-con-agentes.md) | Cómo se especifica, revisa y verifica el trabajo de agentes de IA |
-| [Desarrollo](docs/desarrollo.md) | Setup, comandos, catálogo demo, convenciones |
+El detalle de configuración, comandos y convenciones para levantar y probar el proyecto en local está en [docs/desarrollo.md](docs/desarrollo.md).
 
 ## Hoja de ruta
 
