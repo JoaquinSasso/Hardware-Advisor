@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import fs from 'node:fs';
 import path from 'node:path';
+import type { createDb } from '@pcadvisor/db';
 
 const preprocessEnv = (env: NodeJS.ProcessEnv) => {
   const result: Record<string, string | undefined> = {};
@@ -31,7 +32,7 @@ const ConfigSchema = z.object({
 export const config = ConfigSchema.parse(preprocessEnv(process.env));
 export type Config = z.infer<typeof ConfigSchema>;
 
-export function dbOptions(cfg: Config): { url: string } | { pglite: true; dataDir: string } {
+export function dbOptions(cfg: Config): Parameters<typeof createDb>[0] {
   if (cfg.DATABASE_URL) {
     return { url: cfg.DATABASE_URL };
   }

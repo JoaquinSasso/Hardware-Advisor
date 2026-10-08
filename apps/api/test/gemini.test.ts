@@ -78,12 +78,20 @@ describe('gemini.ts', () => {
   });
 
   describe('GeminiClient retries and fallback', () => {
+    const originalTimeout = AbortSignal.timeout;
+
     beforeEach(() => {
       vi.useFakeTimers();
+      AbortSignal.timeout = (ms: number) => {
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), ms);
+        return controller.signal;
+      };
     });
 
     afterEach(() => {
       vi.restoreAllMocks();
+      AbortSignal.timeout = originalTimeout;
     });
 
     const createInput = () => ({ system: 's', history: [], tools: [] });
@@ -91,8 +99,10 @@ describe('gemini.ts', () => {
     it('Timeout del principal -> el siguiente intento es el respaldo (sin reintentar el principal)', async () => {
       const callModel = vi.fn().mockImplementation(async (args) => {
         if (args.model === 'main-model') {
-          vi.advanceTimersByTime(10000);
-          throw { name: 'TimeoutError' };
+          return new Promise((resolve, reject) => {
+            Object.defineProperty(args.config.abortSignal, 'aborted', { value: true });
+            reject(new Error('timeout simulated'));
+          });
         }
         return { candidates: [{ content: { parts: [{ text: 'fallback-ok' }] } }] };
       });
@@ -182,8 +192,10 @@ describe('gemini.ts', () => {
           throw { status: 503 }; // 1er intento rápido
         }
         if (callModel.mock.calls.length === 2) {
-          vi.advanceTimersByTime(10000);
-          throw { name: 'TimeoutError' }; // 2do intento lento
+          return new Promise((resolve, reject) => {
+            Object.defineProperty(args.config.abortSignal, 'aborted', { value: true });
+            reject(new Error('timeout simulated'));
+          });
         }
         return { candidates: [{ content: { parts: [{ text: 'fallback-ok' }] } }] };
       });
@@ -201,9 +213,11 @@ describe('gemini.ts', () => {
     });
 
     it('Sin respaldo configurado: timeout del principal -> LlmUnavailableError tras 1 intento', async () => {
-      const callModel = vi.fn().mockImplementation(async () => {
-        vi.advanceTimersByTime(10000);
-        throw { name: 'TimeoutError' };
+      const callModel = vi.fn().mockImplementation(async (args) => {
+        return new Promise((resolve, reject) => {
+          Object.defineProperty(args.config.abortSignal, 'aborted', { value: true });
+          reject(new Error('timeout simulated'));
+        });
       });
       
       const logs: any[] = [];
@@ -237,10 +251,11 @@ describe('gemini.ts', () => {
         const timeoutMs = args.config.abortSignal ? 10000 : 0; 
         // Como dependemos de que callModel sea quien avanza el tiempo, 
         // simulamos que el timeout abortó y tardó lo que abortSignal decía.
-        // wait... no tenemos la señal aquí fácil. Avanzamos 10000ms.
-        vi.advanceTimersByTime(10000);
-        totalElapsed += 10000;
-        throw { name: 'TimeoutError' };
+        return new Promise((resolve, reject) => {
+          Object.defineProperty(args.config.abortSignal, 'aborted', { value: true });
+          totalElapsed += 10000;
+          reject(new Error('timeout simulated'));
+        });
       });
 
       const client = new GeminiClient('key', 'main-model', 'fallback-model', undefined, callModel);
@@ -263,6 +278,45 @@ describe('gemini.ts', () => {
       
       // To strictly test the worst case timeline:
       expect(totalElapsed).toBeLessThanOrEqual(25000);
+    });
+
+    it('Timeout con un error de otro nombre -> se trata como timeout y va al respaldo', async () => {
+      const callModel = vi.fn().mockImplementation((args) => {
+        if (args.model === 'main-model') {
+          return new Promise((resolve, reject) => {
+            Object.defineProperty(args.config.abortSignal, 'aborted', { value: true });
+            reject(Object.assign(new Error('request failed'), { name: 'ApiError' }));
+          });
+        }
+        return Promise.resolve({ candidates: [{ content: { parts: [{ text: 'fallback-ok' }] } }] });
+      });
+      
+      const logs: any[] = [];
+      const client = new GeminiClient('key', 'main-model', 'fallback-model', (entry) => logs.push(entry), callModel);
+      
+      const p = client.generate(createInput());
+      await vi.runAllTimersAsync();
+      const res = await p;
+      
+      expect(res).toEqual({ kind: 'text', text: 'fallback-ok' });
+      expect(callModel).toHaveBeenCalledTimes(2);
+      expect(callModel.mock.calls[0][0].model).toBe('main-model');
+      expect(callModel.mock.calls[1][0].model).toBe('fallback-model');
+    });
+
+    it('Error sin status y sin abortar -> fatal, 1 intento', async () => {
+      const callModel = vi.fn().mockImplementation(async (args) => {
+        throw new Error('boom');
+      });
+      
+      const logs: any[] = [];
+      const client = new GeminiClient('key', 'main-model', 'fallback-model', (entry) => logs.push(entry), callModel);
+      
+      const p = expect(client.generate(createInput())).rejects.toThrow('boom');
+      await vi.runAllTimersAsync();
+      await p;
+      
+      expect(callModel).toHaveBeenCalledTimes(1);
     });
   });
 });

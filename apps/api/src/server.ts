@@ -15,7 +15,7 @@ async function main() {
   }
 
   const opts = dbOptions(config);
-  const db = createDb(opts as any);
+  const db = createDb(opts);
 
   if ('url' in opts) {
     const parsed = new URL(opts.url);

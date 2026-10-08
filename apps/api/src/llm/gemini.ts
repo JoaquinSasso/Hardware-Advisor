@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type, FunctionDeclaration, Content, Part, GenerateContentResponse, ThinkingLevel } from '@google/genai';
+import { GoogleGenAI, Type, FunctionDeclaration, Content, Part, GenerateContentResponse, GenerateContentParameters } from '@google/genai';
 import { type ChatTurn } from '@pcadvisor/shared';
 import { LlmUnavailableError, type LlmClient, type LlmOutput, type ToolSpec } from './types.js';
 
@@ -48,12 +48,12 @@ export function toGeminiContents(history: ChatTurn[]): Content[] {
 
 export function fromGeminiResponse(response: GenerateContentResponse, logger?: (entry: Record<string, unknown>) => void): LlmOutput {
   const parts = response.candidates?.[0]?.content?.parts || [];
-  const functionCallParts = parts.filter((p: any) => p.functionCall);
+  const functionCallParts = parts.filter((p: Part) => p.functionCall);
   
   if (functionCallParts.length > 0) {
     if (functionCallParts.length > 1) {
       if (logger) {
-        logger({ level: 'warn', message: 'Multiple function calls returned, using the first one' });
+        logger({ level: 'warn', msg: 'llm_multiple_function_calls', count: functionCallParts.length });
       }
     }
     const fcPart = functionCallParts[0];
@@ -67,8 +67,8 @@ export function fromGeminiResponse(response: GenerateContentResponse, logger?: (
     };
   }
 
-  const textParts = parts.filter((p: any) => p.text && !p.thought);
-  const fullText = textParts.map((p: any) => p.text).join('').trim();
+  const textParts = parts.filter((p: Part) => p.text && !p.thought);
+  const fullText = textParts.map((p: Part) => p.text).join('').trim();
   
   if (!fullText) {
     const finish = response.candidates?.[0]?.finishReason ?? 'unknown';
@@ -86,14 +86,14 @@ export const MIN_ATTEMPT_MS = 3000;
 
 export class GeminiClient implements LlmClient {
   private ai: GoogleGenAI;
-  private callModel: (params: any) => Promise<GenerateContentResponse>;
+  private callModel: (params: GenerateContentParameters) => Promise<GenerateContentResponse>;
   
   constructor(
     apiKey: string,
     private readonly modelName: string,
     private readonly fallbackModelName?: string,
     private readonly logger?: (entry: Record<string, unknown>) => void,
-    callModel?: (params: any) => Promise<GenerateContentResponse>
+    callModel?: (params: GenerateContentParameters) => Promise<GenerateContentResponse>
   ) {
     this.ai = new GoogleGenAI({ apiKey });
     this.callModel = callModel ?? ((params) => this.ai.models.generateContent(params));
@@ -105,6 +105,7 @@ export class GeminiClient implements LlmClient {
     const functionDeclarations: FunctionDeclaration[] = input.tools.map(t => ({
       name: t.name,
       description: t.description,
+      // cast a any porque t.parameters es un esquema JSON escrito a mano y el SDK espera su propio tipo Schema
       parameters: t.parameters as any,
     }));
 
@@ -115,14 +116,16 @@ export class GeminiClient implements LlmClient {
     const runAttempt = async (
       model: string,
       attemptTimeoutMs: number
-    ): Promise<{ kind: 'ok', result: LlmOutput } | { kind: 'retryable_error', error: any, isTimeout: boolean, elapsedMs: number } | { kind: 'fatal_error', error: any }> => {
+    ): Promise<{ kind: 'ok', result: LlmOutput } | { kind: 'retryable_error', error: unknown, isTimeout: boolean, elapsedMs: number } | { kind: 'fatal_error', error: unknown }> => {
       attemptCount++;
       const attemptStartTime = Date.now();
       let outcome: 'ok' | 'retryable_error' | 'fatal_error' | 'timeout' = 'ok';
       let status: number | undefined;
       let finish: string | undefined;
-      let usage: any;
+      let usage: GenerateContentResponse['usageMetadata'];
       let isTimeoutErr = false;
+
+      const signal = AbortSignal.timeout(attemptTimeoutMs);
 
       try {
         const response = await this.callModel({
@@ -131,7 +134,7 @@ export class GeminiClient implements LlmClient {
           config: {
             systemInstruction: input.system,
             tools: [{ functionDeclarations }],
-            abortSignal: AbortSignal.timeout(attemptTimeoutMs),
+            abortSignal: signal,
           },
         });
 
@@ -147,10 +150,12 @@ export class GeminiClient implements LlmClient {
           });
         }
         return { kind: 'ok', result };
-      } catch (err: any) {
-        status = err.status;
+      } catch (err: unknown) {
+        if (typeof err === 'object' && err !== null && 'status' in err && typeof err.status === 'number') {
+          status = err.status;
+        }
         
-        isTimeoutErr = err.name === 'AbortError' || err.name === 'TimeoutError';
+        isTimeoutErr = signal.aborted;
         const isEmptyResponse = err instanceof LlmUnavailableError && err.message.startsWith('empty response');
         const isRetryableStatus = status === 429 || status === 500 || status === 502 || status === 503 || status === 504;
         

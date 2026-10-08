@@ -1,4 +1,5 @@
 import { type ChatTurn } from '@pcadvisor/shared';
+import { z } from 'zod';
 
 export const INITIAL_SUGGESTIONS = [
   "Quiero jugar Valorant y LoL, tengo $1.000.000",
@@ -13,10 +14,12 @@ export const AFTER_SUGGESTIONS = [
   "Prefiero Intel",
 ];
 
+const OkResultSchema = z.object({ status: z.literal('ok') });
+
 export function getSuggestions(turns: ChatTurn[], newTurns: ChatTurn[]): string[] {
   const allTurns = [...turns, ...newTurns];
   const hasRecommendation = allTurns.some(
-    t => t.role === 'tool' && t.name === 'recommend_builds' && (t.result as any).status === 'ok'
+    t => t.role === 'tool' && t.name === 'recommend_builds' && OkResultSchema.safeParse(t.result).success
   );
   return hasRecommendation ? AFTER_SUGGESTIONS : INITIAL_SUGGESTIONS;
 }
