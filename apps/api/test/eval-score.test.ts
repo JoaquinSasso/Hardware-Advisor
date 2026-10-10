@@ -98,7 +98,7 @@ describe('scoreCase', () => {
     expect(result.ok).toBe(false);
   });
 
-  it('ask sin "?" no aprueba', () => {
+  it('ask sin tool call aprueba aunque no tenga ?', () => {
     const c: Case = { ...baseCase, expect: { kind: 'ask' } };
     const turn = {
       ...baseTurn,
@@ -106,7 +106,7 @@ describe('scoreCase', () => {
       toolCalls: [],
     };
     const result = scoreCase(c, [turn]);
-    expect(result.ok).toBe(false);
+    expect(result.ok).toBe(true);
   });
 
   it('out_of_scope sin tool call -> aprobado automatico y needsReview toBe(true)', () => {
@@ -117,15 +117,15 @@ describe('scoreCase', () => {
     expect(result.needsReview).toBe(true);
   });
 
-  it('quote_price con el totalLabel en el reply aprueba; sin el no aprueba', () => {
+  it('quote_price con el total “$ 1.264.817” y la respuesta “cuesta 1.264.817 pesos” aprueba; sin el no aprueba', () => {
     const c: Case = { ...baseCase, expect: { kind: 'quote_price' } };
     const turnWithTotal = {
       ...baseTurn,
       toolCalls: [{
         args: {},
-        result: { status: 'ok', builds: [{ totalLabel: '$ 100.000' }] },
+        result: { status: 'ok', builds: [{ totalLabel: '$ 1.264.817' }] },
       }],
-      reply: 'Cuesta $ 100.000 total',
+      reply: 'cuesta 1.264.817 pesos',
     };
     let result = scoreCase(c, [turnWithTotal]);
     expect(result.ok).toBe(true);
@@ -134,7 +134,7 @@ describe('scoreCase', () => {
       ...baseTurn,
       toolCalls: [{
         args: {},
-        result: { status: 'ok', builds: [{ totalLabel: '$ 100.000' }] },
+        result: { status: 'ok', builds: [{ totalLabel: '$ 1.264.817' }] },
       }],
       reply: 'Cuesta mucho',
     };
@@ -149,9 +149,9 @@ describe('scoreCase', () => {
     expect(scoreCase(baseCase, [turn2]).markdown).toBe(0);
   });
 
-  it('bannedWords cuenta "Ideal" y no cuenta "idealmente"', () => {
-    const turn1 = { ...baseTurn, rawTexts: ['Esto es Ideal para vos'] };
-    const turn2 = { ...baseTurn, rawTexts: ['idealmente seria asi'] };
+  it('bannedWords cuenta "Perfecto" y no cuenta "perfectamente"', () => {
+    const turn1 = { ...baseTurn, rawTexts: ['Esto es Perfecto para vos'] };
+    const turn2 = { ...baseTurn, rawTexts: ['perfectamente seria asi'] };
     expect(scoreCase(baseCase, [turn1]).bannedWords).toBe(1);
     expect(scoreCase(baseCase, [turn2]).bannedWords).toBe(0);
   });
