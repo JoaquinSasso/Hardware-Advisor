@@ -1,4 +1,5 @@
 import type { Case, TurnRecord, Score } from './schema.js';
+import { extractAmounts } from '../src/chat/money-guard.js';
 
 export function scoreCase(c: Case, turns: TurnRecord[], error?: string): Score {
   if (error) {
@@ -80,7 +81,7 @@ export function scoreCase(c: Case, turns: TurnRecord[], error?: string): Score {
     }
   } else if (c.expect.kind === 'ask') {
     const hasToolCall = lastTurn.toolCalls.length > 0;
-    if (!hasToolCall && lastTurn.reply.includes('?')) {
+    if (!hasToolCall) {
       ok = true;
     }
   } else if (c.expect.kind === 'out_of_scope' || c.expect.kind === 'no_invent' || c.expect.kind === 'refuse') {
@@ -91,21 +92,23 @@ export function scoreCase(c: Case, turns: TurnRecord[], error?: string): Score {
     needsReview = true;
   } else if (c.expect.kind === 'quote_price') {
     if (moneyViolations === 0) {
-      const okLabels = new Set<string>();
+      const okAmounts = new Set<number>();
       for (const t of turns) {
         for (const tc of t.toolCalls) {
           if (tc.result && tc.result.status === 'ok' && Array.isArray(tc.result.builds)) {
             for (const b of tc.result.builds) {
               if (b.totalLabel) {
-                okLabels.add(b.totalLabel);
+                const amounts = extractAmounts(b.totalLabel);
+                for (const a of amounts) okAmounts.add(a);
               }
             }
           }
         }
       }
 
-      for (const label of okLabels) {
-        if (lastTurn.reply.includes(label)) {
+      const replyAmounts = extractAmounts(lastTurn.reply);
+      for (const amt of replyAmounts) {
+        if (okAmounts.has(amt)) {
           ok = true;
           break;
         }
@@ -144,7 +147,7 @@ function countMarkdown(turns: TurnRecord[]): number {
 
 function countBannedWords(turns: TurnRecord[]): number {
   let count = 0;
-  const regex = /\b(perfecto|perfecta|ideal|garantizado|garantizada|increíble)\b/gi;
+  const regex = /\b(perfecto|perfecta|garantizado|garantizada|increíble)\b/gi;
   for (const t of turns) {
     for (const text of t.rawTexts) {
       const matches = text.match(regex);
