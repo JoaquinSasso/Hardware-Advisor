@@ -5,3 +5,4 @@
 .pglite/
 dist/
 node_modules/
+apps/api/eval/results/

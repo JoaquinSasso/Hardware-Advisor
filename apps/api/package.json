@@ -6,7 +6,8 @@
 		"build": "tsc && tsc -p tsconfig.scripts.json",
 		"test": "vitest run",
 		"smoke": "tsx --env-file=.env scripts/smoke.ts",
-		"dev": "tsx watch --env-file=.env src/server.ts"
+		"dev": "tsx watch --env-file=.env src/server.ts",
+		"eval": "tsx --env-file=.env eval/run.ts"
 	},
 	"dependencies": {
 		"@google/genai": "^2.27.0",
