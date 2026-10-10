@@ -24,11 +24,56 @@ export function findMoneyViolations(reply: string, allowed: Set<number>): number
   return violations;
 }
 
+const wordToNum: Record<string, number> = {
+  un: 1, uno: 1, una: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5,
+  seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10
+};
+
+export function extractUserAmounts(text: string): number[] {
+  const results = new Set<number>(extractAmounts(text));
+
+  const regexMillions = /(?<![\p{L}\d])(un|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|\d+(?:[.,]\d+)?)\s*(millones|millón|millon|palos|palo|m)(?:\s+(y\s+medio)|\s+(\d{3}))?(?![\p{L}])/giu;
+  for (const match of text.matchAll(regexMillions)) {
+    const nStr = match[1]!.toLowerCase();
+    const n = wordToNum[nStr] !== undefined ? wordToNum[nStr] : parseFloat(nStr.replace(',', '.'));
+    
+    let total = Math.round(n * 1_000_000);
+    if (match[3]) {
+      total += 500_000;
+    } else if (match[4]) {
+      total += parseInt(match[4], 10) * 1_000;
+    }
+    
+    if (!isNaN(total)) {
+      results.add(total);
+    }
+  }
+
+  const regexThousands = /(?<![\p{L}\d])(\d+(?:[.,]\d+)?)\s*(lucas|luca|k|mil)(?![\p{L}])/giu;
+  for (const match of text.matchAll(regexThousands)) {
+    const n = parseFloat(match[1]!.replace(',', '.'));
+    if (!isNaN(n)) {
+      results.add(Math.round(n * 1_000));
+    }
+  }
+
+  const regexStandalone = /(?<![\p{L}\d])(entre|y|hasta|con|tengo|presupuesto|de|por|x|unos|maso)\s+(\d{3,4})(?![\p{L}\d.,])/giu;
+  for (const match of text.matchAll(regexStandalone)) {
+    const n = parseInt(match[2]!, 10);
+    if (n >= 100 && n <= 9999) {
+      results.add(n);
+      results.add(n * 1_000);
+    }
+  }
+
+  return Array.from(results).sort((a, b) => a - b);
+}
+
 export function collectAllowedAmounts(turns: ChatTurn[]): Set<number> {
   const allowed = new Set<number>();
   for (const turn of turns) {
     if (turn.role === 'user') {
-      for (const amt of extractAmounts(turn.text)) {
+      for (const amt of extractUserAmounts(turn.text)) {
         allowed.add(amt);
       }
     } else if (turn.role === 'tool') {
