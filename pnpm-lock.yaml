@@ -190,6 +190,9 @@ importers:
       '@pcadvisor/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@pcadvisor/tiendanube':
+        specifier: workspace:*
+        version: link:../../packages/tiendanube
       hono:
         specifier: ^4.6.1
         version: 4.13.13
@@ -289,6 +292,16 @@ importers:
       '@types/node':
         specifier: ^22.13.9
         version: 22.20.5
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+
+  packages/tiendanube:
+    dependencies:
+      zod:
+        specifier: ^3.24.2
+        version: 3.25.76
+    devDependencies:
       typescript:
         specifier: ^5.8.2
         version: 5.9.3

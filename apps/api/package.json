@@ -6,6 +6,7 @@
 		"build": "tsc && tsc -p tsconfig.scripts.json",
 		"test": "vitest run",
 		"smoke": "tsx --env-file=.env scripts/smoke.ts",
+		"sync:catalog": "tsx --env-file=.env scripts/sync-catalog.ts",
 		"dev": "tsx watch --env-file=.env src/server.ts",
 		"eval": "tsx --env-file=.env eval/run.ts"
 	},
@@ -16,7 +17,8 @@
 		"zod": "^3.23.8",
 		"@pcadvisor/shared": "workspace:*",
 		"@pcadvisor/db": "workspace:*",
-		"@pcadvisor/engine": "workspace:*"
+		"@pcadvisor/engine": "workspace:*",
+		"@pcadvisor/tiendanube": "workspace:*"
 	},
 	"devDependencies": {
 		"tsx": "^4.19.1",

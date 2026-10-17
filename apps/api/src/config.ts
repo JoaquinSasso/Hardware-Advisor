@@ -27,6 +27,9 @@ const ConfigSchema = z.object({
   GEMINI_FALLBACK_MODEL: z.string().optional(),
   ALLOWED_ORIGINS: z.string().transform((val) => val.split(',').map(s => s.trim()).filter(Boolean)).default('*'),
   MAX_USER_MESSAGES: z.coerce.number().int().positive().default(20),
+  TN_STORE_ID: z.coerce.number().int().positive().optional(),
+  TN_ACCESS_TOKEN: z.string().optional(),
+  TN_USER_AGENT: z.string().optional(),
 });
 
 export const config = ConfigSchema.parse(preprocessEnv(process.env));
